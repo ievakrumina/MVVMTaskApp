@@ -12,18 +12,34 @@ class TasksViewModel @ViewModelInject constructor(
   private val taskDao: TaskDao
 ) : ViewModel() {
 
-  val searchQuery = MutableStateFlow("")
-  val sortOder = MutableStateFlow(SortOrder.BY_NAME)
-  val hideCompleted = MutableStateFlow(false)
+  private val searchQuery = MutableStateFlow("")
+  private val sortOrder = MutableStateFlow(SortOrder.BY_NAME)
+  private val hideCompleted = MutableStateFlow(false)
+
+  fun searchQueryTasks(query: String) {
+    searchQuery.value = query
+  }
+
+  fun hideCompletedTasks(checked: Boolean) {
+    hideCompleted.value = checked
+  }
+
+  fun sortTasksByDate() {
+    sortOrder.value = SortOrder.BY_DATE
+  }
+
+  fun sortTasksByName() {
+    sortOrder.value = SortOrder.BY_NAME
+  }
 
   private val taskFlow = combine(
     searchQuery,
-    sortOder,
+    sortOrder,
     hideCompleted
-  ) { query, sortOder, hideCompleted ->
-    Triple(query, sortOder, hideCompleted)
-  }.flatMapLatest { (query, sortOder, hideCompleted) ->
-    taskDao.getTasks(query, sortOder, hideCompleted)
+  ) { query, sortOrder, hideCompleted ->
+    Triple(query, sortOrder, hideCompleted)
+  }.flatMapLatest { (query, sortOrder, hideCompleted) ->
+    taskDao.getTasks(query, sortOrder, hideCompleted)
   }
   val tasks = taskFlow.asLiveData()
 }
