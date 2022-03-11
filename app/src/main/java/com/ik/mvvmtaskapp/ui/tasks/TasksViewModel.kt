@@ -3,13 +3,13 @@ package com.ik.mvvmtaskapp.ui.tasks
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
-import com.ik.mvvmtaskapp.data.TaskDao
+import com.ik.mvvmtaskapp.data.TaskRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 
 class TasksViewModel @ViewModelInject constructor(
-  private val taskDao: TaskDao
+  private val taskRepository: TaskRepository
 ) : ViewModel() {
 
   private val searchQuery = MutableStateFlow("")
@@ -39,7 +39,7 @@ class TasksViewModel @ViewModelInject constructor(
   ) { query, sortOrder, hideCompleted ->
     Triple(query, sortOrder, hideCompleted)
   }.flatMapLatest { (query, sortOrder, hideCompleted) ->
-    taskDao.getTasks(query, sortOrder, hideCompleted)
+    taskRepository.getTasks(query, sortOrder, hideCompleted)
   }
   val tasks = taskFlow.asLiveData()
 }

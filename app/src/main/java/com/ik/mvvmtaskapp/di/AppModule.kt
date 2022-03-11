@@ -1,9 +1,8 @@
 package com.ik.mvvmtaskapp.di
 
 import android.app.Application
-import androidx.room.CoroutinesRoom
 import androidx.room.Room
-import com.ik.mvvmtaskapp.data.Task
+import com.ik.mvvmtaskapp.data.TaskDao
 import com.ik.mvvmtaskapp.data.TaskDatabase
 import dagger.Module
 import dagger.Provides
@@ -13,6 +12,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import javax.inject.Qualifier
 import javax.inject.Singleton
+import com.ik.mvvmtaskapp.data.TaskRepository as TaskRepository
 
 @Module
 @InstallIn(ApplicationComponent::class)
@@ -35,6 +35,9 @@ object AppModule {
   @Provides
   @Singleton
   fun provideApplicationScope() = CoroutineScope(SupervisorJob())
+
+  @Provides
+  fun provideTaskRepository(dao: TaskDao) = TaskRepository(dao)
 }
 
 @Retention(AnnotationRetention.RUNTIME)
