@@ -29,6 +29,7 @@ object AppModule {
     .build()
 
   @Provides
+  @Singleton
   fun provideTaskDao(db: TaskDatabase) = db.taskDao()
 
   @ApplicationScope
@@ -37,6 +38,7 @@ object AppModule {
   fun provideApplicationScope() = CoroutineScope(SupervisorJob())
 
   @Provides
+  @Singleton
   fun provideTaskRepository(dao: TaskDao) = TaskRepository(dao)
 }
 
