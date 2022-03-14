@@ -25,6 +25,7 @@ buildscript {
         roomVersion = "2.2.5"
         testExtJunitVersion = "1.1.2"
         mockkVersion = "1.12.2"
+        coroutineTestVersion = "1.4.0"
     }
 
     repositories {
