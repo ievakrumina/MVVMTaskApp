@@ -26,6 +26,7 @@ buildscript {
         testExtJunitVersion = "1.1.2"
         mockkVersion = "1.12.2"
         coroutineTestVersion = "1.4.0"
+        archCoreTestingVersion = "2.1.0"
     }
 
     repositories {
