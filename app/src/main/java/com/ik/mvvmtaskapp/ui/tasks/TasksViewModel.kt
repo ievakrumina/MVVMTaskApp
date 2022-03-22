@@ -1,47 +1,58 @@
 package com.ik.mvvmtaskapp.ui.tasks
 
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
+import androidx.lifecycle.*
+import com.ik.mvvmtaskapp.data.Task
 import com.ik.mvvmtaskapp.data.TaskRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class TasksViewModel @ViewModelInject constructor(
   private val taskRepository: TaskRepository
 ) : ViewModel() {
 
-  private val searchQuery = MutableStateFlow("")
-  private val sortOrder = MutableStateFlow(SortOrder.BY_NAME)
-  private val hideCompleted = MutableStateFlow(false)
+  private val _tasks = MutableLiveData<List<Task>>()
+  val tasks: LiveData<List<Task>>
+    get() = _tasks
+
+  private var searchQuery = "A"
+  private var sortOrder = SortOrder.BY_NAME
+  private var hideCompleted = false
+
+  init {
+    getTasks()
+  }
 
   fun searchQueryTasks(query: String) {
-    searchQuery.value = query
+    searchQuery = query
+    getTasks()
   }
 
   fun hideCompletedTasks(checked: Boolean) {
-    hideCompleted.value = checked
+    hideCompleted = checked
+    getTasks()
   }
 
   fun sortTasksByDate() {
-    sortOrder.value = SortOrder.BY_DATE
+    sortOrder = SortOrder.BY_DATE
+    getTasks()
   }
 
   fun sortTasksByName() {
-    sortOrder.value = SortOrder.BY_NAME
+    sortOrder = SortOrder.BY_NAME
+    getTasks()
   }
 
-  private val taskFlow = combine(
-    searchQuery,
-    sortOrder,
-    hideCompleted
-  ) { query, sortOrder, hideCompleted ->
-    Triple(query, sortOrder, hideCompleted)
-  }.flatMapLatest { (query, sortOrder, hideCompleted) ->
-    taskRepository.getTasks(query, sortOrder, hideCompleted)
+  private fun getTasks() {
+    //Launch IO thread
+    viewModelScope.launch {
+      //Observe list of tasks from repository
+      taskRepository.getTasks(searchQuery,sortOrder,hideCompleted).collect {
+        //Post value to live data once the list is received
+        _tasks.postValue(it)
+      }
+    }
   }
-  val tasks = taskFlow.asLiveData()
 }
 
 enum class SortOrder { BY_NAME, BY_DATE }

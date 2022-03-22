@@ -1,78 +1,97 @@
 package com.ik.mvvmtaskapp.ui.tasks
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.ik.mvvmtaskapp.data.Task
 import com.ik.mvvmtaskapp.data.TaskRepository
 import io.mockk.MockKAnnotations
+import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
+import io.mockk.unmockkAll
+import junit.framework.Assert.assertEquals
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.test.*
+import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 
 class TasksViewModelTest {
 
+  @get:Rule
+  val rule = InstantTaskExecutorRule()
+
   private lateinit var viewModel: TasksViewModel
+  private val testDispatcher = TestCoroutineDispatcher()
+  private val testScope = TestCoroutineScope()
 
   @MockK
-  lateinit var repository: TaskRepository
+  private lateinit var repository: TaskRepository
 
   @Before
   fun setUp() {
+    Dispatchers.setMain(testDispatcher)
+    testScope.coroutineContext
     MockKAnnotations.init(this)
+
+    //Mock before view model, because this is used in init block
+    val taskFlow = flow { emit(listOf(
+      Task("First task"),
+      Task("Second task"))) }
+    coEvery { repository.getTasks(any(), any(), any()) } returns taskFlow
+
     viewModel = TasksViewModel(repository)
   }
 
   @Test
-  fun `get all tasks`() {
-    //TODO
-    //insert some tasks
-    //assert that all tasks are returned
+  fun `get all tasks`() = runBlockingTest {
+    viewModel.tasks.observeForever {
+      assertEquals("First task", it[0].name)
+      assertEquals("Second task", it[1].name)
+    }
   }
 
   @Test
-  fun `hide completed tasks`() {
-    //TODO
-    //insert some tasks
-    //hide completed tasks
-    //verify that only not completed tasks are returned
+  fun `hide completed tasks`() = runBlockingTest {
+    viewModel.hideCompletedTasks(true)
+    viewModel.tasks.observeForever {
+      assertEquals("First task", it[0].name)
+      assertEquals("Second task", it[1].name)
+    }
   }
 
   @Test
-  fun `sort tasks by date`() {
-    //TODO
-    //insert some tasks
-    //sort tasks by date
-    //verify order
+  fun `sort tasks by date`() = runBlockingTest {
+    viewModel.sortTasksByDate()
+    viewModel.tasks.observeForever {
+      assertEquals("First task", it[0].name)
+      assertEquals("Second task", it[1].name)
+    }
   }
 
   @Test
-  fun `sort tasks by name`() {
-    //TODO
-    //insert some tasks
-    //sort tasks by name
-    //verify order
+  fun `sort tasks by name`() = runBlockingTest {
+    viewModel.sortTasksByName()
+    viewModel.tasks.observeForever {
+      assertEquals("First task", it[0].name)
+      assertEquals("Second task", it[1].name)
+    }
   }
 
   @Test
-  fun `search for existing tasks`() {
-    //TODO
-    //insert some tasks
-    //search by specific name
-    //verify correct tasks are returned
+  fun `search for existing tasks`() = runBlockingTest {
+    viewModel.searchQueryTasks("task")
+    viewModel.tasks.observeForever {
+      assertEquals("First task", it[0].name)
+      assertEquals("Second task", it[1].name)
+    }
   }
 
-  @Test
-  fun `search for not existing task`() {
-    //TODO
-    //insert some tasks
-    //search for invalid task name
-    //verify empty list is returned
-  }
-
-  @Test
-  fun `get tasks by using hide completed options, search, sort`() {
-    //TODO
-    //insert some tasks
-    //hide completed
-    //search on name
-    //sort on name
-    //verify correct tasks are returned
+  @After
+  fun tearDown() {
+    unmockkAll()
+    Dispatchers.resetMain()
+    testDispatcher.cleanupTestCoroutines()
+    testScope.cleanupTestCoroutines()
   }
 }
