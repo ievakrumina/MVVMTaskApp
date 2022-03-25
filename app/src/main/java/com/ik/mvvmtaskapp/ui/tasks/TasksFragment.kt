@@ -31,8 +31,20 @@ class TasksFragment : Fragment(R.layout.frag_tasks) {
         setHasFixedSize(true)
       }
     }
-    viewModel.tasks.observe(viewLifecycleOwner) {
-      taskAdapter.submitList(it)
+    viewModel.tasks.observe(viewLifecycleOwner) { taskState ->
+      when (taskState) {
+        TasksViewModel.TaskListState.Empty -> {
+          binding.linearLayoutNoTasks.visibility = View.VISIBLE
+          binding.recyclerViewTasks.visibility = View.GONE
+        }
+         is TasksViewModel.TaskListState.Success-> {
+          binding.linearLayoutNoTasks.visibility = View.GONE
+          binding.recyclerViewTasks.visibility = View.VISIBLE
+          taskAdapter.submitList(taskState.list)
+        }
+        TasksViewModel.TaskListState.Error -> TODO()
+        TasksViewModel.TaskListState.Loading -> TODO()
+      }
     }
 
     setHasOptionsMenu(true)
