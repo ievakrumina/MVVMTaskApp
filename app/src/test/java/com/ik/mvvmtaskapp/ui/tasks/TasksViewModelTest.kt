@@ -8,7 +8,9 @@ import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
 import io.mockk.unmockkAll
 import junit.framework.Assert.assertEquals
+import junit.framework.Assert.fail
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.*
 import org.junit.After
@@ -46,8 +48,15 @@ class TasksViewModelTest {
   @Test
   fun `get all tasks`() = runBlockingTest {
     viewModel.tasks.observeForever {
-      assertEquals("First task", it[0].name)
-      assertEquals("Second task", it[1].name)
+      when(it) {
+        is TasksViewModel.TaskListState.Success -> {
+          assertEquals("First task", it.list[0].name)
+          assertEquals("Second task", it.list[1].name)
+        }
+        is TasksViewModel.TaskListState.Error -> fail()
+        is TasksViewModel.TaskListState.Empty -> fail()
+        is TasksViewModel.TaskListState.Loading -> fail()
+      }
     }
   }
 
@@ -55,8 +64,15 @@ class TasksViewModelTest {
   fun `hide completed tasks`() = runBlockingTest {
     viewModel.hideCompletedTasks(true)
     viewModel.tasks.observeForever {
-      assertEquals("First task", it[0].name)
-      assertEquals("Second task", it[1].name)
+      when(it) {
+        is TasksViewModel.TaskListState.Success -> {
+          assertEquals("First task", it.list[0].name)
+          assertEquals("Second task", it.list[1].name)
+        }
+        is TasksViewModel.TaskListState.Error -> fail()
+        is TasksViewModel.TaskListState.Empty -> fail()
+        is TasksViewModel.TaskListState.Loading -> fail()
+      }
     }
   }
 
@@ -64,8 +80,15 @@ class TasksViewModelTest {
   fun `sort tasks by date`() = runBlockingTest {
     viewModel.sortTasksByDate()
     viewModel.tasks.observeForever {
-      assertEquals("First task", it[0].name)
-      assertEquals("Second task", it[1].name)
+      when(it) {
+        is TasksViewModel.TaskListState.Success -> {
+          assertEquals("First task", it.list[0].name)
+          assertEquals("Second task", it.list[1].name)
+        }
+        is TasksViewModel.TaskListState.Error -> fail()
+        is TasksViewModel.TaskListState.Empty -> fail()
+        is TasksViewModel.TaskListState.Loading -> fail()
+      }
     }
   }
 
@@ -73,8 +96,15 @@ class TasksViewModelTest {
   fun `sort tasks by name`() = runBlockingTest {
     viewModel.sortTasksByName()
     viewModel.tasks.observeForever {
-      assertEquals("First task", it[0].name)
-      assertEquals("Second task", it[1].name)
+      when(it) {
+        is TasksViewModel.TaskListState.Success -> {
+          assertEquals("First task", it.list[0].name)
+          assertEquals("Second task", it.list[1].name)
+        }
+        is TasksViewModel.TaskListState.Error -> fail()
+        is TasksViewModel.TaskListState.Empty -> fail()
+        is TasksViewModel.TaskListState.Loading -> fail()
+      }
     }
   }
 
@@ -82,8 +112,45 @@ class TasksViewModelTest {
   fun `search for existing tasks`() = runBlockingTest {
     viewModel.searchQueryTasks("task")
     viewModel.tasks.observeForever {
-      assertEquals("First task", it[0].name)
-      assertEquals("Second task", it[1].name)
+      when(it) {
+        is TasksViewModel.TaskListState.Success -> {
+          assertEquals("First task", it.list[0].name)
+          assertEquals("Second task", it.list[1].name)
+        }
+        is TasksViewModel.TaskListState.Error -> fail()
+        is TasksViewModel.TaskListState.Empty -> fail()
+        is TasksViewModel.TaskListState.Loading -> fail()
+      }
+    }
+  }
+
+  @Test
+  fun `empty list state`() = runBlockingTest {
+    coEvery { repository.getTasks(any(), any(), any()) } returns flow { emit(emptyList<Task>()) }
+    viewModel.searchQueryTasks("invalid query")
+    viewModel.tasks.observeForever {
+      when(it) {
+        is TasksViewModel.TaskListState.Success -> fail()
+        is TasksViewModel.TaskListState.Error -> fail()
+        is TasksViewModel.TaskListState.Empty -> {
+          assertEquals(TasksViewModel.TaskListState.Empty, it)
+        }
+        is TasksViewModel.TaskListState.Loading -> fail()
+      }
+    }
+  }
+
+  @Test
+  fun `loading list state`() = runBlockingTest {
+    coEvery { repository.getTasks(any(), any(), any()) } returns emptyFlow()
+    viewModel.searchQueryTasks("invalid query")
+    viewModel.tasks.observeForever {
+      when(it) {
+        is TasksViewModel.TaskListState.Success -> fail()
+        is TasksViewModel.TaskListState.Error -> fail()
+        is TasksViewModel.TaskListState.Empty -> fail()
+        is TasksViewModel.TaskListState.Loading -> assertEquals(TasksViewModel.TaskListState.Loading, it)
+      }
     }
   }
 
