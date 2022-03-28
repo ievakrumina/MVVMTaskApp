@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -34,16 +35,27 @@ class TasksFragment : Fragment(R.layout.frag_tasks) {
     viewModel.tasks.observe(viewLifecycleOwner) { taskState ->
       when (taskState) {
         TasksViewModel.TaskListState.Empty -> {
+          binding.linearLayoutLoading.visibility = View.GONE
           binding.linearLayoutNoTasks.visibility = View.VISIBLE
           binding.recyclerViewTasks.visibility = View.GONE
         }
-         is TasksViewModel.TaskListState.Success-> {
+        is TasksViewModel.TaskListState.Success -> {
+          binding.linearLayoutLoading.visibility = View.GONE
           binding.linearLayoutNoTasks.visibility = View.GONE
           binding.recyclerViewTasks.visibility = View.VISIBLE
           taskAdapter.submitList(taskState.list)
         }
-        TasksViewModel.TaskListState.Error -> TODO()
-        TasksViewModel.TaskListState.Loading -> TODO()
+        is TasksViewModel.TaskListState.Error -> {
+          binding.linearLayoutLoading.visibility = View.GONE
+          binding.linearLayoutNoTasks.visibility = View.VISIBLE
+          binding.recyclerViewTasks.visibility = View.GONE
+          Toast.makeText(context,R.string.generic_error, Toast.LENGTH_SHORT).show()
+        }
+        is TasksViewModel.TaskListState.Loading -> {
+          binding.linearLayoutLoading.visibility = View.VISIBLE
+          binding.linearLayoutNoTasks.visibility = View.GONE
+          binding.recyclerViewTasks.visibility = View.GONE
+        }
       }
     }
 
