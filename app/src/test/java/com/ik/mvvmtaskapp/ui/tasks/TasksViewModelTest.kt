@@ -11,7 +11,7 @@ import junit.framework.Assert.assertEquals
 import junit.framework.Assert.fail
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.*
 import org.junit.After
 import org.junit.Before
@@ -37,9 +37,10 @@ class TasksViewModelTest {
     MockKAnnotations.init(this)
 
     //Mock before view model, because this is used in init block
-    val taskFlow = flow { emit(listOf(
+    val taskFlow = flowOf(listOf(
       Task("First task"),
-      Task("Second task"))) }
+      Task("Second task")
+    ))
     coEvery { repository.getTasks(any(), any(), any()) } returns taskFlow
 
     viewModel = TasksViewModel(repository)
@@ -126,7 +127,7 @@ class TasksViewModelTest {
 
   @Test
   fun `empty list state`() = runBlockingTest {
-    coEvery { repository.getTasks(any(), any(), any()) } returns flow { emit(emptyList<Task>()) }
+    coEvery { repository.getTasks(any(), any(), any()) } returns flowOf(emptyList())
     viewModel.searchQueryTasks("invalid query")
     viewModel.tasks.observeForever {
       when(it) {
