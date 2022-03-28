@@ -63,12 +63,9 @@ class TasksViewModel @ViewModelInject constructor(
       //Observe list of tasks from repository
       taskRepository.getTasks(searchQuery, sortOrder, hideCompleted)
         .catch { e->
-          if (e is IOException) {
-            Log.e(TAG, "Error reading database", e)
-            _tasks.postValue(TaskListState.Error)
-          } else {
-            throw e
-          }
+          TODO()
+          Log.e(TAG, "Error reading database", e)
+          _tasks.postValue(TaskListState.Error)
         }
         .collect { tasks ->
           when (tasks.isEmpty()) {
