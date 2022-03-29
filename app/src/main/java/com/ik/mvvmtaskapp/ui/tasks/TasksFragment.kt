@@ -19,6 +19,14 @@ import dagger.hilt.android.AndroidEntryPoint
 class TasksFragment : Fragment(R.layout.frag_tasks) {
   private val viewModel: TasksViewModel by viewModels()
 
+  /** Using onCreate instead of viewModel init block.\
+   *  Called to do initial creation of a fragment
+   */
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    viewModel.getTasks()
+  }
+
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 

@@ -35,25 +35,17 @@ class TasksViewModelTest {
     Dispatchers.setMain(testDispatcher)
     testScope.coroutineContext
     MockKAnnotations.init(this)
-
-    //Mock before view model, because this is used in init block
-    val taskFlow = flowOf(listOf(
-      Task("First task"),
-      Task("Second task")
-    ))
-    coEvery { repository.getTasks(any(), any(), any()) } returns taskFlow
-
     viewModel = TasksViewModel(repository)
   }
 
   @Test
   fun `get all tasks`() = runBlockingTest {
+    val taskFlow = flowOf(listOf(Task("First task")))
+    coEvery { repository.getTasks(any(), any(), any()) } returns taskFlow
+    viewModel.searchQueryTasks("")
     viewModel.tasks.observeForever {
       when(it) {
-        is TasksViewModel.TaskListState.Success -> {
-          assertEquals("First task", it.list[0].name)
-          assertEquals("Second task", it.list[1].name)
-        }
+        is TasksViewModel.TaskListState.Success -> assertEquals("First task", it.list[0].name)
         is TasksViewModel.TaskListState.Error -> fail()
         is TasksViewModel.TaskListState.Empty -> fail()
         is TasksViewModel.TaskListState.Loading -> fail()
@@ -63,13 +55,12 @@ class TasksViewModelTest {
 
   @Test
   fun `hide completed tasks`() = runBlockingTest {
+    val taskFlow = flowOf(listOf(Task("First task", checked = true)))
+    coEvery { repository.getTasks(any(), any(), true) } returns taskFlow
     viewModel.hideCompletedTasks(true)
     viewModel.tasks.observeForever {
       when(it) {
-        is TasksViewModel.TaskListState.Success -> {
-          assertEquals("First task", it.list[0].name)
-          assertEquals("Second task", it.list[1].name)
-        }
+        is TasksViewModel.TaskListState.Success -> assertEquals("First task", it.list[0].name)
         is TasksViewModel.TaskListState.Error -> fail()
         is TasksViewModel.TaskListState.Empty -> fail()
         is TasksViewModel.TaskListState.Loading -> fail()
@@ -79,13 +70,12 @@ class TasksViewModelTest {
 
   @Test
   fun `sort tasks by date`() = runBlockingTest {
+    val taskFlow = flowOf(listOf(Task("First task")))
+    coEvery { repository.getTasks(any(), SortOrder.BY_DATE, any()) } returns taskFlow
     viewModel.sortTasksByDate()
     viewModel.tasks.observeForever {
       when(it) {
-        is TasksViewModel.TaskListState.Success -> {
-          assertEquals("First task", it.list[0].name)
-          assertEquals("Second task", it.list[1].name)
-        }
+        is TasksViewModel.TaskListState.Success -> assertEquals("First task", it.list[0].name)
         is TasksViewModel.TaskListState.Error -> fail()
         is TasksViewModel.TaskListState.Empty -> fail()
         is TasksViewModel.TaskListState.Loading -> fail()
@@ -95,13 +85,12 @@ class TasksViewModelTest {
 
   @Test
   fun `sort tasks by name`() = runBlockingTest {
+    val taskFlow = flowOf(listOf(Task("First task")))
+    coEvery { repository.getTasks(any(), SortOrder.BY_NAME, any()) } returns taskFlow
     viewModel.sortTasksByName()
     viewModel.tasks.observeForever {
       when(it) {
-        is TasksViewModel.TaskListState.Success -> {
-          assertEquals("First task", it.list[0].name)
-          assertEquals("Second task", it.list[1].name)
-        }
+        is TasksViewModel.TaskListState.Success -> assertEquals("First task", it.list[0].name)
         is TasksViewModel.TaskListState.Error -> fail()
         is TasksViewModel.TaskListState.Empty -> fail()
         is TasksViewModel.TaskListState.Loading -> fail()
@@ -111,13 +100,12 @@ class TasksViewModelTest {
 
   @Test
   fun `search for existing tasks`() = runBlockingTest {
+    val taskFlow = flowOf(listOf(Task("First task")))
+    coEvery { repository.getTasks("task", any(), any()) } returns taskFlow
     viewModel.searchQueryTasks("task")
     viewModel.tasks.observeForever {
       when(it) {
-        is TasksViewModel.TaskListState.Success -> {
-          assertEquals("First task", it.list[0].name)
-          assertEquals("Second task", it.list[1].name)
-        }
+        is TasksViewModel.TaskListState.Success -> assertEquals("First task", it.list[0].name)
         is TasksViewModel.TaskListState.Error -> fail()
         is TasksViewModel.TaskListState.Empty -> fail()
         is TasksViewModel.TaskListState.Loading -> fail()
@@ -128,14 +116,11 @@ class TasksViewModelTest {
   @Test
   fun `empty list state`() = runBlockingTest {
     coEvery { repository.getTasks(any(), any(), any()) } returns flowOf(emptyList())
-    viewModel.searchQueryTasks("invalid query")
     viewModel.tasks.observeForever {
       when(it) {
         is TasksViewModel.TaskListState.Success -> fail()
         is TasksViewModel.TaskListState.Error -> fail()
-        is TasksViewModel.TaskListState.Empty -> {
-          assertEquals(TasksViewModel.TaskListState.Empty, it)
-        }
+        is TasksViewModel.TaskListState.Empty -> assertEquals(TasksViewModel.TaskListState.Empty, it)
         is TasksViewModel.TaskListState.Loading -> fail()
       }
     }
@@ -144,7 +129,6 @@ class TasksViewModelTest {
   @Test
   fun `loading list state`() = runBlockingTest {
     coEvery { repository.getTasks(any(), any(), any()) } returns emptyFlow()
-    viewModel.searchQueryTasks("invalid query")
     viewModel.tasks.observeForever {
       when(it) {
         is TasksViewModel.TaskListState.Success -> fail()

@@ -32,10 +32,6 @@ class TasksViewModel @ViewModelInject constructor(
   private var sortOrder = SortOrder.BY_NAME
   private var hideCompleted = false
 
-  init {
-    getTasks()
-  }
-
   fun searchQueryTasks(query: String) {
     searchQuery = query
     getTasks()
@@ -56,7 +52,7 @@ class TasksViewModel @ViewModelInject constructor(
     getTasks()
   }
 
-  private fun getTasks() {
+  fun getTasks() {
     _tasks.postValue(Loading)
     //Launch IO thread
     viewModelScope.launch {
