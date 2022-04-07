@@ -1,15 +1,12 @@
 package com.ik.mvvmtaskapp.ui.tasks
 
-import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
+import com.ik.mvvmtaskapp.data.Resource
 import com.ik.mvvmtaskapp.data.Task
 import com.ik.mvvmtaskapp.data.TaskRepository
-import com.ik.mvvmtaskapp.ui.tasks.TasksViewModel.TaskListState.Loading
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import java.io.IOException
 
 private const val TAG = "TaskViewModel"
 
@@ -53,21 +50,22 @@ class TasksViewModel @ViewModelInject constructor(
   }
 
   fun getTasks() {
-    _tasks.postValue(Loading)
+    _tasks.postValue(TaskListState.Loading)
     //Launch IO thread
     viewModelScope.launch {
       //Observe list of tasks from repository
       taskRepository.getTasks(searchQuery, sortOrder, hideCompleted)
-        .catch { e->
-          TODO()
-          Log.e(TAG, "Error reading database", e)
-          _tasks.postValue(TaskListState.Error)
-        }
-        .collect { tasks ->
-          when (tasks.isEmpty()) {
-            true -> _tasks.postValue(TaskListState.Empty)
-            //Post value to live data once the list is received
-            false -> _tasks.postValue(TaskListState.Success(tasks))
+        .collect { taskList ->
+          when (taskList) {
+            is Resource.Error -> _tasks.postValue(TaskListState.Error)
+            is Resource.Loading -> _tasks.postValue(TaskListState.Loading)
+            is Resource.Success -> {
+              when (taskList.data.isEmpty()) {
+                true -> _tasks.postValue(TaskListState.Empty)
+                //Post value to live data once the list is received
+                false -> _tasks.postValue(TaskListState.Success(taskList.data))
+              }
+            }
           }
         }
     }

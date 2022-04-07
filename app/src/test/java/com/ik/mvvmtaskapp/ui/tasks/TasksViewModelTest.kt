@@ -1,17 +1,14 @@
 package com.ik.mvvmtaskapp.ui.tasks
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.ik.mvvmtaskapp.data.Task
-import com.ik.mvvmtaskapp.data.TaskRepository
+import com.ik.mvvmtaskapp.data.*
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.impl.annotations.MockK
 import io.mockk.unmockkAll
-import junit.framework.Assert.assertEquals
-import junit.framework.Assert.fail
+import junit.framework.Assert.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.*
 import org.junit.After
 import org.junit.Before
@@ -40,101 +37,121 @@ class TasksViewModelTest {
 
   @Test
   fun `get all tasks`() = runBlockingTest {
-    val taskFlow = flowOf(listOf(Task("First task")))
-    coEvery { repository.getTasks(any(), any(), any()) } returns taskFlow
+    val response = MutableStateFlow<Resource<List<Task>>>(listOf(Task("First task")).asSuccess())
+    coEvery { repository.getTasks(any(), any(), any()) } returns response
     viewModel.searchQueryTasks("")
     viewModel.tasks.observeForever {
       when(it) {
         is TasksViewModel.TaskListState.Success -> assertEquals("First task", it.list[0].name)
-        is TasksViewModel.TaskListState.Error -> fail()
-        is TasksViewModel.TaskListState.Empty -> fail()
-        is TasksViewModel.TaskListState.Loading -> fail()
+        is TasksViewModel.TaskListState.Error -> fail("Unexpected state")
+        is TasksViewModel.TaskListState.Empty -> fail("Unexpected state")
+        is TasksViewModel.TaskListState.Loading -> fail("Unexpected state")
       }
     }
   }
 
   @Test
   fun `hide completed tasks`() = runBlockingTest {
-    val taskFlow = flowOf(listOf(Task("First task", checked = true)))
-    coEvery { repository.getTasks(any(), any(), true) } returns taskFlow
+    val response = MutableStateFlow<Resource<List<Task>>>(listOf(Task("First task")).asSuccess())
+    coEvery { repository.getTasks(any(), any(), true) } returns response
     viewModel.hideCompletedTasks(true)
     viewModel.tasks.observeForever {
       when(it) {
         is TasksViewModel.TaskListState.Success -> assertEquals("First task", it.list[0].name)
-        is TasksViewModel.TaskListState.Error -> fail()
-        is TasksViewModel.TaskListState.Empty -> fail()
-        is TasksViewModel.TaskListState.Loading -> fail()
+        is TasksViewModel.TaskListState.Error -> fail("Unexpected state")
+        is TasksViewModel.TaskListState.Empty -> fail("Unexpected state")
+        is TasksViewModel.TaskListState.Loading -> fail("Unexpected state")
       }
     }
   }
 
   @Test
   fun `sort tasks by date`() = runBlockingTest {
-    val taskFlow = flowOf(listOf(Task("First task")))
-    coEvery { repository.getTasks(any(), SortOrder.BY_DATE, any()) } returns taskFlow
+    val response = MutableStateFlow<Resource<List<Task>>>(listOf(Task("First task")).asSuccess())
+    coEvery { repository.getTasks(any(), SortOrder.BY_DATE, any()) } returns response
     viewModel.sortTasksByDate()
     viewModel.tasks.observeForever {
       when(it) {
         is TasksViewModel.TaskListState.Success -> assertEquals("First task", it.list[0].name)
-        is TasksViewModel.TaskListState.Error -> fail()
-        is TasksViewModel.TaskListState.Empty -> fail()
-        is TasksViewModel.TaskListState.Loading -> fail()
+        is TasksViewModel.TaskListState.Error -> fail("Unexpected state")
+        is TasksViewModel.TaskListState.Empty -> fail("Unexpected state")
+        is TasksViewModel.TaskListState.Loading -> fail("Unexpected state")
       }
     }
   }
 
   @Test
   fun `sort tasks by name`() = runBlockingTest {
-    val taskFlow = flowOf(listOf(Task("First task")))
-    coEvery { repository.getTasks(any(), SortOrder.BY_NAME, any()) } returns taskFlow
+    val response = MutableStateFlow<Resource<List<Task>>>(listOf(Task("First task")).asSuccess())
+    coEvery { repository.getTasks(any(), SortOrder.BY_NAME, any()) } returns response
     viewModel.sortTasksByName()
     viewModel.tasks.observeForever {
       when(it) {
         is TasksViewModel.TaskListState.Success -> assertEquals("First task", it.list[0].name)
-        is TasksViewModel.TaskListState.Error -> fail()
-        is TasksViewModel.TaskListState.Empty -> fail()
-        is TasksViewModel.TaskListState.Loading -> fail()
+        is TasksViewModel.TaskListState.Error -> fail("Unexpected state")
+        is TasksViewModel.TaskListState.Empty -> fail("Unexpected state")
+        is TasksViewModel.TaskListState.Loading -> fail("Unexpected state")
       }
     }
   }
 
   @Test
   fun `search for existing tasks`() = runBlockingTest {
-    val taskFlow = flowOf(listOf(Task("First task")))
-    coEvery { repository.getTasks("task", any(), any()) } returns taskFlow
+    val response = MutableStateFlow<Resource<List<Task>>>(listOf(Task("First task")).asSuccess())
+    coEvery { repository.getTasks("task", any(), any()) } returns response
     viewModel.searchQueryTasks("task")
     viewModel.tasks.observeForever {
       when(it) {
         is TasksViewModel.TaskListState.Success -> assertEquals("First task", it.list[0].name)
-        is TasksViewModel.TaskListState.Error -> fail()
-        is TasksViewModel.TaskListState.Empty -> fail()
-        is TasksViewModel.TaskListState.Loading -> fail()
+        is TasksViewModel.TaskListState.Error -> fail("Unexpected state")
+        is TasksViewModel.TaskListState.Empty -> fail("Unexpected state")
+        is TasksViewModel.TaskListState.Loading -> fail("Unexpected state")
       }
     }
   }
 
   @Test
   fun `empty list state`() = runBlockingTest {
-    coEvery { repository.getTasks(any(), any(), any()) } returns flowOf(emptyList())
+    val response = MutableStateFlow<Resource<List<Task>>>(emptyList<Task>().asSuccess())
+    coEvery { repository.getTasks(any(), any(), any()) } returns response
+    viewModel.searchQueryTasks("Invalid query")
     viewModel.tasks.observeForever {
       when(it) {
-        is TasksViewModel.TaskListState.Success -> fail()
-        is TasksViewModel.TaskListState.Error -> fail()
-        is TasksViewModel.TaskListState.Empty -> assertEquals(TasksViewModel.TaskListState.Empty, it)
-        is TasksViewModel.TaskListState.Loading -> fail()
+        is TasksViewModel.TaskListState.Success -> fail("Unexpected state")
+        is TasksViewModel.TaskListState.Error -> fail("Unexpected state")
+        is TasksViewModel.TaskListState.Empty -> {}
+        is TasksViewModel.TaskListState.Loading -> fail("Unexpected state")
       }
     }
   }
 
   @Test
-  fun `loading list state`() = runBlockingTest {
-    coEvery { repository.getTasks(any(), any(), any()) } returns emptyFlow()
+  fun `list loading state`() = runBlockingTest {
+    val response = MutableStateFlow<Resource<List<Task>>>(listOf<Task>().asLoading())
+    coEvery { repository.getTasks(any(), any(), any()) } returns response
+    viewModel.searchQueryTasks("")
     viewModel.tasks.observeForever {
       when(it) {
-        is TasksViewModel.TaskListState.Success -> fail()
-        is TasksViewModel.TaskListState.Error -> fail()
-        is TasksViewModel.TaskListState.Empty -> fail()
-        is TasksViewModel.TaskListState.Loading -> assertEquals(TasksViewModel.TaskListState.Loading, it)
+        is TasksViewModel.TaskListState.Success -> fail("Unexpected state")
+        is TasksViewModel.TaskListState.Error -> fail("Unexpected state")
+        is TasksViewModel.TaskListState.Empty -> fail("Unexpected state")
+        is TasksViewModel.TaskListState.Loading -> {}
+        }
+      }
+    }
+
+  @Test
+  fun `list error state`() = runBlockingTest {
+    //TODO
+    val response = MutableStateFlow<Resource<List<Task>>>(listOf<Task>().asError())
+    coEvery { repository.getTasks(any(), any(), any()) } returns response
+    viewModel.searchQueryTasks("")
+    viewModel.tasks.observeForever {
+      when(it) {
+        is TasksViewModel.TaskListState.Success -> fail("Unexpected state")
+        is TasksViewModel.TaskListState.Error -> {}
+        is TasksViewModel.TaskListState.Empty -> fail("Unexpected state")
+        is TasksViewModel.TaskListState.Loading -> fail("Unexpected state")
       }
     }
   }
