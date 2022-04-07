@@ -11,12 +11,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ik.mvvmtaskapp.R
+import com.ik.mvvmtaskapp.data.Task
 import com.ik.mvvmtaskapp.databinding.FragTasksBinding
 import com.ik.mvvmtaskapp.util.onQueryTextChanged
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class TasksFragment : Fragment(R.layout.frag_tasks) {
+class TasksFragment : Fragment(R.layout.frag_tasks), TaskAdapter.OnItemClickListener {
   private val viewModel: TasksViewModel by viewModels()
 
   /** Using onCreate instead of viewModel init block.\
@@ -31,7 +32,7 @@ class TasksFragment : Fragment(R.layout.frag_tasks) {
     super.onViewCreated(view, savedInstanceState)
 
     val binding = FragTasksBinding.bind(view)
-    val taskAdapter = TaskAdapter()
+    val taskAdapter = TaskAdapter(this)
 
     binding.apply {
       recyclerViewTasks.apply {
@@ -102,5 +103,13 @@ class TasksFragment : Fragment(R.layout.frag_tasks) {
       }
       else -> super.onOptionsItemSelected(item)
     }
+  }
+
+  override fun onItemClick(task: Task) {
+    viewModel.onTaskSelected(task)
+  }
+
+  override fun onCheckBoxClick(task: Task, isChecked: Boolean) {
+    viewModel.onTaskCheckChanged(task, isChecked)
   }
 }

@@ -26,4 +26,6 @@ class TaskRepository @Inject constructor(
     }
     return _tasks
   }
+
+  suspend fun updateTask(task: Task) = taskDao.update(task)
 }

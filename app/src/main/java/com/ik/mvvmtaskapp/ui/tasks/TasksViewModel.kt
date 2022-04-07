@@ -70,6 +70,13 @@ class TasksViewModel @ViewModelInject constructor(
         }
     }
   }
+
+  fun onTaskSelected(task: Task) {}
+  fun onTaskCheckChanged(task: Task, isChecked: Boolean) =
+    viewModelScope.launch {
+      taskRepository.updateTask(task.copy(checked = isChecked))
+    }
+
 }
 
 enum class SortOrder { BY_NAME, BY_DATE }

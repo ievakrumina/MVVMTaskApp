@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ik.mvvmtaskapp.data.Task
 import com.ik.mvvmtaskapp.databinding.ItemTaskBinding
 
-class TaskAdapter : ListAdapter<Task, TaskAdapter.TaskViewHolder>(DiffCallback()) {
+class TaskAdapter(private val listener:  OnItemClickListener) : ListAdapter<Task, TaskAdapter.TaskViewHolder>(DiffCallback()) {
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
     val binding = ItemTaskBinding.inflate(LayoutInflater.from(parent.context), parent, false)
     return TaskViewHolder(binding)
@@ -19,9 +19,29 @@ class TaskAdapter : ListAdapter<Task, TaskAdapter.TaskViewHolder>(DiffCallback()
     holder.bind(currentItem)
   }
 
-  class TaskViewHolder(
+  inner class TaskViewHolder(
     private val binding: ItemTaskBinding
   ) : RecyclerView.ViewHolder(binding.root) {
+
+    init {
+      binding.apply {
+        root.setOnClickListener {
+          val position = adapterPosition
+          if (position != RecyclerView.NO_POSITION) {
+            val task = getItem(position)
+            listener.onItemClick(task)
+          }
+        }
+        checkBoxCompleted.setOnClickListener {
+          val position = adapterPosition
+          if (position!=RecyclerView.NO_POSITION) {
+            val task = getItem(position)
+            listener.onCheckBoxClick(task, checkBoxCompleted.isChecked)
+          }
+        }
+      }
+    }
+
     fun bind(task: Task) {
       binding.apply {
         checkBoxCompleted.isChecked = task.checked
@@ -29,6 +49,11 @@ class TaskAdapter : ListAdapter<Task, TaskAdapter.TaskViewHolder>(DiffCallback()
         textViewTask.paint.isStrikeThruText = task.checked
       }
     }
+  }
+
+  interface OnItemClickListener {
+    fun onItemClick(task: Task)
+    fun onCheckBoxClick(task: Task, isChecked: Boolean)
   }
 
   class DiffCallback: DiffUtil.ItemCallback<Task>() {
