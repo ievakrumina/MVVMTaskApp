@@ -98,7 +98,7 @@ class TasksFragment : Fragment(R.layout.frag_tasks), TaskAdapter.OnItemClickList
         true
       }
       R.id.action_delete_completed_tasks -> {
-        //TODO
+        viewModel.deleteCompletedTasks()
         true
       }
       else -> super.onOptionsItemSelected(item)

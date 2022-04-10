@@ -39,7 +39,7 @@ object AppModule {
 
   @Provides
   @Singleton
-  fun provideTaskRepository(dao: TaskDao) = TaskRepository(dao)
+  fun provideTaskRepository(dao: TaskDao) = TaskRepository(dao, provideApplicationScope())
 }
 
 @Retention(AnnotationRetention.RUNTIME)
