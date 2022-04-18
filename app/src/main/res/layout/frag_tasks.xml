@@ -10,7 +10,7 @@
         android:id="@+id/recycler_view_tasks"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:visibility="gone"/>
+        tools:visibility="visible"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_add_task"
@@ -39,7 +39,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"
-        tools:visibility="visible">
+        tools:visibility="gone">
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/animation_loading"
             android:layout_width="match_parent"

@@ -47,4 +47,6 @@ class TaskRepository @Inject constructor(
       taskDao.deleteCompletedTasks()
     }
   }
+
+  suspend fun insertTask(task: Task)  = taskDao.insert(task)
 }

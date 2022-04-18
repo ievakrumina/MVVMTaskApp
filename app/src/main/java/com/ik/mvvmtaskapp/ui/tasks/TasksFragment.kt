@@ -8,11 +8,16 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import com.ik.mvvmtaskapp.R
 import com.ik.mvvmtaskapp.data.Task
 import com.ik.mvvmtaskapp.databinding.FragTasksBinding
+import com.ik.mvvmtaskapp.ui.addedittasks.TaskAction
 import com.ik.mvvmtaskapp.util.onQueryTextChanged
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -40,7 +45,26 @@ class TasksFragment : Fragment(R.layout.frag_tasks), TaskAdapter.OnItemClickList
         layoutManager = LinearLayoutManager(requireContext())
         setHasFixedSize(true)
       }
+
+      fabAddTask.setOnClickListener { view ->
+        val action = TasksFragmentDirections.actionTasksFragmentToAddEditTaskFragment(null, getString(R.string.new_task))
+        view.findNavController().navigate(action)
+      }
     }
+
+    setFragmentResultListener("add_edit_request") {_, bundle ->
+      when(bundle.get("add_edit_result")) {
+        TaskAction.CREATED ->
+          Snackbar
+            .make(requireView(), R.string.task_created, Snackbar.LENGTH_SHORT)
+            .show()
+        TaskAction.UPDATED ->
+          Snackbar
+            .make(requireView(), R.string.task_updated, Snackbar.LENGTH_SHORT)
+            .show()
+      }
+    }
+
     viewModel.tasks.observe(viewLifecycleOwner) { taskState ->
       when (taskState) {
         TasksViewModel.TaskListState.Empty -> {
@@ -106,7 +130,8 @@ class TasksFragment : Fragment(R.layout.frag_tasks), TaskAdapter.OnItemClickList
   }
 
   override fun onItemClick(task: Task) {
-    viewModel.onTaskSelected(task)
+    val action = TasksFragmentDirections.actionTasksFragmentToAddEditTaskFragment(task, getString(R.string.edit_task))
+    view?.findNavController()?.navigate(action)
   }
 
   override fun onCheckBoxClick(task: Task, isChecked: Boolean) {
