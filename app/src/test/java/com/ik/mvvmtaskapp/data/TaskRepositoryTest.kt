@@ -2,12 +2,11 @@ package com.ik.mvvmtaskapp.data
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.ik.mvvmtaskapp.ui.tasks.SortOrder
-import io.mockk.MockKAnnotations
-import io.mockk.coEvery
+import io.mockk.*
 import io.mockk.impl.annotations.MockK
-import io.mockk.unmockkAll
 import junit.framework.Assert.assertEquals
 import junit.framework.Assert.fail
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.test.*
@@ -32,7 +31,7 @@ class TaskRepositoryTest {
     Dispatchers.setMain(testDispatcher)
     testScope.coroutineContext
     MockKAnnotations.init(this)
-    repo = TaskRepository(taskDao)
+    repo = TaskRepository(taskDao, testScope)
   }
 
   @Test
@@ -54,6 +53,24 @@ class TaskRepositoryTest {
       is Resource.Loading -> fail("Unexpected state")
       is Resource.Error -> {}
     }
+  }
+
+  @Test
+  fun `update task`() = runBlockingTest {
+    coEvery { taskDao.update(any()) } just Runs
+    repo.updateTask(Task("Test"))
+  }
+
+  @Test
+  fun `insert task`() = runBlockingTest {
+    coEvery { taskDao.insert(any()) } just Runs
+    repo.insertTask(Task("Task"))
+  }
+
+  @Test
+  fun `delete completed tasks`() = runBlockingTest {
+    coEvery { taskDao.deleteCompletedTasks() } just Runs
+    repo.deleteCompletedTasks()
   }
 
   @After
