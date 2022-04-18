@@ -6,7 +6,6 @@ import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import junit.framework.Assert.assertEquals
 import junit.framework.Assert.fail
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.test.*

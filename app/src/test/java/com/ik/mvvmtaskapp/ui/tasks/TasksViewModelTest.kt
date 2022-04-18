@@ -2,10 +2,8 @@ package com.ik.mvvmtaskapp.ui.tasks
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.ik.mvvmtaskapp.data.*
-import io.mockk.MockKAnnotations
-import io.mockk.coEvery
+import io.mockk.*
 import io.mockk.impl.annotations.MockK
-import io.mockk.unmockkAll
 import junit.framework.Assert.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -142,7 +140,6 @@ class TasksViewModelTest {
 
   @Test
   fun `list error state`() = runBlockingTest {
-    //TODO
     val response = MutableStateFlow<Resource<List<Task>>>(listOf<Task>().asError())
     coEvery { repository.getTasks(any(), any(), any()) } returns response
     viewModel.searchQueryTasks("")
@@ -154,6 +151,20 @@ class TasksViewModelTest {
         is TasksViewModel.TaskListState.Loading -> fail("Unexpected state")
       }
     }
+  }
+
+  @Test
+  fun `task check changed`() = runBlockingTest {
+    //To fix
+    coEvery { repository.updateTask(any())} just Runs
+    viewModel.onTaskCheckChanged(Task("Task"), true)
+
+  }
+
+  @Test
+  fun `delete completed tasks`() = runBlockingTest {
+    coEvery {repository.deleteCompletedTasks()} just Runs
+    viewModel.deleteCompletedTasks()
   }
 
   @After
