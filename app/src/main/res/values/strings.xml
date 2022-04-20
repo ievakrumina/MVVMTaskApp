@@ -16,4 +16,7 @@
     <string name="task_created_date">Created:</string>
     <string name="empty_task_error">Name cannot be empty</string>
     <string name="task_updated">Task is updated</string>
+    <string name="delete_completed_tasks_alert">Do you want to delete all completed tasks?</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete_confirmation">Delete</string>
 </resources>

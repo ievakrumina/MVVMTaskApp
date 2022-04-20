@@ -27,4 +27,8 @@
             android:name="title"
             app:argType="string" />
     </fragment>
+    <dialog
+        android:id="@+id/deleteCompletedTasksFragment"
+        android:name="com.ik.mvvmtaskapp.ui.deletecompletedtasks.DeleteCompletedTasksFragment"
+        android:label="DeleteCompletedTasksFragment" /><action android:id="@+id/action_global_deleteCompletedTasksFragment" app:destination="@id/deleteCompletedTasksFragment"/>
 </navigation>

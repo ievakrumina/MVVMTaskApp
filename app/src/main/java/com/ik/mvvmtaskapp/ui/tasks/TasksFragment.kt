@@ -122,7 +122,8 @@ class TasksFragment : Fragment(R.layout.frag_tasks), TaskAdapter.OnItemClickList
         true
       }
       R.id.action_delete_completed_tasks -> {
-        viewModel.deleteCompletedTasks()
+        val action = TasksFragmentDirections.actionGlobalDeleteCompletedTasksFragment()
+        view?.findNavController()?.navigate(action)
         true
       }
       else -> super.onOptionsItemSelected(item)

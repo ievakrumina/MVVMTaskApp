@@ -159,12 +159,6 @@ class TasksViewModelTest {
 
   }
 
-  @Test
-  fun `delete completed tasks`() = runBlockingTest {
-    coEvery {repository.deleteCompletedTasks()} just Runs
-    viewModel.deleteCompletedTasks()
-  }
-
   @After
   fun tearDown() {
     unmockkAll()

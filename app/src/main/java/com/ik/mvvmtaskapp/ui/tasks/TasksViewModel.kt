@@ -76,12 +76,6 @@ class TasksViewModel @ViewModelInject constructor(
       taskRepository.updateTask(task.copy(checked = isChecked))
     }
 
-  fun deleteCompletedTasks() {
-    viewModelScope.launch {
-      taskRepository.deleteCompletedTasks()
-    }
-  }
-
 }
 
 enum class SortOrder { BY_NAME, BY_DATE }
