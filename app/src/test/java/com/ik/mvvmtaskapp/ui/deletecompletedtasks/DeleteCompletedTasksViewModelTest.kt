@@ -37,6 +37,7 @@ class DeleteCompletedTasksViewModelTest {
   fun `delete completed tasks`() = runBlockingTest {
     coEvery {repository.deleteCompletedTasks()} just Runs
     viewModel.deleteCompletedTasks()
+    coVerify(exactly = 1) { repository.deleteCompletedTasks()}
   }
 
   @After

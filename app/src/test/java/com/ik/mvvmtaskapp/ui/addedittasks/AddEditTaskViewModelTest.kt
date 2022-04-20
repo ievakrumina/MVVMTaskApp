@@ -125,12 +125,14 @@ class AddEditTaskViewModelTest {
           assertEquals(it.result, TaskAction.CREATED)
       }
     }
+    coVerify(exactly = 1) { repository.insertTask(any()) }
   }
 
   @Test
   fun `save updated task`() = runBlockingTest {
+    val task = Task("First task")
     val state = SavedStateHandle().apply {
-      set("task", Task("First task"))
+      set("task", task)
     }
     val viewModel = AddEditTaskViewModel(repository, state)
     coEvery { repository.updateTask(any()) } just Runs
@@ -142,6 +144,7 @@ class AddEditTaskViewModelTest {
           assertEquals(it.result, TaskAction.UPDATED)
       }
     }
+    coVerify(exactly = 1) { repository.updateTask(task) }
   }
 
   @After

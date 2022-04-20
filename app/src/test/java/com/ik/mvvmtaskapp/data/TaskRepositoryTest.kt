@@ -55,20 +55,25 @@ class TaskRepositoryTest {
 
   @Test
   fun `update task`() = runBlockingTest {
+    val task = Task("Test")
     coEvery { taskDao.update(any()) } just Runs
-    repo.updateTask(Task("Test"))
+    repo.updateTask(task)
+    coVerify { taskDao.update(task) }
   }
 
   @Test
   fun `insert task`() = runBlockingTest {
+    val task = Task("Task")
     coEvery { taskDao.insert(any()) } just Runs
-    repo.insertTask(Task("Task"))
+    repo.insertTask(task)
+    coVerify(exactly = 1) { taskDao.insert(task) }
   }
 
   @Test
   fun `delete completed tasks`() = runBlockingTest {
     coEvery { taskDao.deleteCompletedTasks() } just Runs
     repo.deleteCompletedTasks()
+    coVerify(exactly = 1) { taskDao.deleteCompletedTasks()}
   }
 
   @After

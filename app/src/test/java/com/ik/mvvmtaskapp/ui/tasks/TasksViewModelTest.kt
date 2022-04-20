@@ -153,10 +153,10 @@ class TasksViewModelTest {
 
   @Test
   fun `task check changed`() = runBlockingTest {
-    //To fix
+    val task = Task("Task")
     coEvery { repository.updateTask(any())} just Runs
-    viewModel.onTaskCheckChanged(Task("Task"), true)
-
+    viewModel.onTaskCheckChanged(task, true)
+    coVerify(exactly = 1) { repository.updateTask(task.copy(checked = true)) }
   }
 
   @After
