@@ -20,7 +20,6 @@ class TasksViewModelTest {
 
   private lateinit var viewModel: TasksViewModel
   private val testDispatcher = TestCoroutineDispatcher()
-  private val testScope = TestCoroutineScope()
 
   @MockK
   private lateinit var repository: TaskRepository
@@ -28,7 +27,6 @@ class TasksViewModelTest {
   @Before
   fun setUp() {
     Dispatchers.setMain(testDispatcher)
-    testScope.coroutineContext
     MockKAnnotations.init(this)
     viewModel = TasksViewModel(repository)
   }
@@ -171,7 +169,5 @@ class TasksViewModelTest {
   fun tearDown() {
     unmockkAll()
     Dispatchers.resetMain()
-    testDispatcher.cleanupTestCoroutines()
-    testScope.cleanupTestCoroutines()
   }
 }

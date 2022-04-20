@@ -28,7 +28,6 @@ class TaskRepositoryTest {
   @Before
   fun setUp() {
     Dispatchers.setMain(testDispatcher)
-    testScope.coroutineContext
     MockKAnnotations.init(this)
     repo = TaskRepository(taskDao, testScope)
   }
