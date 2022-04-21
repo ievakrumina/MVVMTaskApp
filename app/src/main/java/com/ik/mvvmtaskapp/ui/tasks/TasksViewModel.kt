@@ -5,6 +5,8 @@ import androidx.lifecycle.*
 import com.ik.mvvmtaskapp.data.Resource
 import com.ik.mvvmtaskapp.data.Task
 import com.ik.mvvmtaskapp.data.TaskRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -26,6 +28,10 @@ class TasksViewModel @ViewModelInject constructor(
   val tasks: LiveData<TaskListState>
     get() = _tasks
 
+  private val _hideCompletedStatus = MutableStateFlow(false)
+  val hideCompletedStatus: StateFlow<Boolean>
+    get() = _hideCompletedStatus
+
   private var searchQuery = ""
   private var sortOrder = SortOrder.BY_NAME
   private var hideCompleted = false
@@ -38,6 +44,7 @@ class TasksViewModel @ViewModelInject constructor(
   fun hideCompletedTasks(checked: Boolean) {
     hideCompleted = checked
     getTasks()
+    _hideCompletedStatus.value = checked
   }
 
   fun sortTasksByDate() {

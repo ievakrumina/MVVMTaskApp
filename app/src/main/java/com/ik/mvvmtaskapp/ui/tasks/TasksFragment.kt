@@ -23,6 +23,7 @@ import com.ik.mvvmtaskapp.ui.addedittasks.TaskAction
 import com.ik.mvvmtaskapp.util.onQueryTextChanged
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.frag_tasks.view.*
+import kotlinx.coroutines.flow.collect
 
 
 @AndroidEntryPoint
@@ -132,6 +133,10 @@ class TasksFragment : Fragment(R.layout.frag_tasks), TaskAdapter.OnItemClickList
     searchView.onQueryTextChanged {
       viewModel.searchQueryTasks(it)
     }
+
+
+    menu.findItem(R.id.action_hide_completed_tasks).isChecked = viewModel.hideCompletedStatus.value
+
   }
 
   override fun onOptionsItemSelected(item: MenuItem): Boolean {

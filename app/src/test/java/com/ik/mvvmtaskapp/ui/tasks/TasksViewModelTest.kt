@@ -52,6 +52,8 @@ class TasksViewModelTest {
     val response = MutableStateFlow<Resource<List<Task>>>(listOf(Task("First task")).asSuccess())
     coEvery { repository.getTasks(any(), any(), true) } returns response
     viewModel.hideCompletedTasks(true)
+    assertEquals(viewModel.hideCompletedStatus.value, true)
+
     viewModel.tasks.observeForever {
       when(it) {
         is TasksViewModel.TaskListState.Success -> assertEquals("First task", it.list[0].name)
