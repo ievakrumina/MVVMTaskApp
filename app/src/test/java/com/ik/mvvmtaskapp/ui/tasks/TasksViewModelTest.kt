@@ -42,6 +42,7 @@ class TasksViewModelTest {
         is TasksViewModel.TaskListState.Error -> fail("Unexpected state")
         is TasksViewModel.TaskListState.Empty -> fail("Unexpected state")
         is TasksViewModel.TaskListState.Loading -> fail("Unexpected state")
+        is TasksViewModel.TaskListState.DeleteTask -> fail("Unexpected state")
       }
     }
   }
@@ -57,6 +58,7 @@ class TasksViewModelTest {
         is TasksViewModel.TaskListState.Error -> fail("Unexpected state")
         is TasksViewModel.TaskListState.Empty -> fail("Unexpected state")
         is TasksViewModel.TaskListState.Loading -> fail("Unexpected state")
+        is TasksViewModel.TaskListState.DeleteTask -> fail("Unexpected state")
       }
     }
   }
@@ -72,6 +74,7 @@ class TasksViewModelTest {
         is TasksViewModel.TaskListState.Error -> fail("Unexpected state")
         is TasksViewModel.TaskListState.Empty -> fail("Unexpected state")
         is TasksViewModel.TaskListState.Loading -> fail("Unexpected state")
+        is TasksViewModel.TaskListState.DeleteTask -> fail("Unexpected state")
       }
     }
   }
@@ -87,6 +90,7 @@ class TasksViewModelTest {
         is TasksViewModel.TaskListState.Error -> fail("Unexpected state")
         is TasksViewModel.TaskListState.Empty -> fail("Unexpected state")
         is TasksViewModel.TaskListState.Loading -> fail("Unexpected state")
+        is TasksViewModel.TaskListState.DeleteTask -> fail("Unexpected state")
       }
     }
   }
@@ -102,6 +106,7 @@ class TasksViewModelTest {
         is TasksViewModel.TaskListState.Error -> fail("Unexpected state")
         is TasksViewModel.TaskListState.Empty -> fail("Unexpected state")
         is TasksViewModel.TaskListState.Loading -> fail("Unexpected state")
+        is TasksViewModel.TaskListState.DeleteTask -> fail("Unexpected state")
       }
     }
   }
@@ -117,6 +122,7 @@ class TasksViewModelTest {
         is TasksViewModel.TaskListState.Error -> fail("Unexpected state")
         is TasksViewModel.TaskListState.Empty -> {}
         is TasksViewModel.TaskListState.Loading -> fail("Unexpected state")
+        is TasksViewModel.TaskListState.DeleteTask -> fail("Unexpected state")
       }
     }
   }
@@ -132,7 +138,8 @@ class TasksViewModelTest {
         is TasksViewModel.TaskListState.Error -> fail("Unexpected state")
         is TasksViewModel.TaskListState.Empty -> fail("Unexpected state")
         is TasksViewModel.TaskListState.Loading -> {}
-        }
+        is TasksViewModel.TaskListState.DeleteTask -> fail("Unexpected state")
+      }
       }
     }
 
@@ -147,6 +154,7 @@ class TasksViewModelTest {
         is TasksViewModel.TaskListState.Error -> {}
         is TasksViewModel.TaskListState.Empty -> fail("Unexpected state")
         is TasksViewModel.TaskListState.Loading -> fail("Unexpected state")
+        is TasksViewModel.TaskListState.DeleteTask -> fail("Unexpected state")
       }
     }
   }
