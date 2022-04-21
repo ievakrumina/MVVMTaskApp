@@ -76,6 +76,14 @@ class TaskRepositoryTest {
     coVerify(exactly = 1) { taskDao.deleteCompletedTasks()}
   }
 
+  @Test
+  fun `delete single task`() = runBlockingTest {
+    val task = Task("New task")
+    coEvery { taskDao.delete(any()) } just Runs
+    repo.deleteTask(task)
+    coVerify(exactly = 1) { taskDao.delete(task) }
+  }
+
   @After
   fun tearDown() {
     unmockkAll()

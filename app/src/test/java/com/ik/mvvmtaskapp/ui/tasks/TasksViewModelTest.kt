@@ -159,6 +159,32 @@ class TasksViewModelTest {
     coVerify(exactly = 1) { repository.updateTask(task.copy(checked = true)) }
   }
 
+  @Test
+  fun `delete task on swipe`() = runBlockingTest {
+    val task = Task("Task")
+    coEvery { repository.deleteTask(any())} just Runs
+    viewModel.onTaskSwiped(task)
+    viewModel.tasks.observeForever { taskState ->
+      when(taskState) {
+        is TasksViewModel.TaskListState.DeleteTask ->
+          assertEquals(taskState.task, task)
+        TasksViewModel.TaskListState.Empty -> fail("Unexpected state")
+        TasksViewModel.TaskListState.Error -> fail("Unexpected state")
+        TasksViewModel.TaskListState.Loading -> fail("Unexpected state")
+        is TasksViewModel.TaskListState.Success -> fail("Unexpected state")
+      }
+    }
+    coVerify(exactly = 1) { repository.deleteTask(task) }
+  }
+
+  @Test
+  fun `undo delete task`() = runBlockingTest {
+    val task = Task("Task")
+    coEvery { repository.insertTask(any()) } just Runs
+    viewModel.onUndoDeleteClicked(task)
+    coVerify(exactly = 1) { repository.insertTask(task) }
+  }
+
   @After
   fun tearDown() {
     unmockkAll()

@@ -19,6 +19,7 @@ class TasksViewModel @ViewModelInject constructor(
     object Loading : TaskListState()
     object Empty : TaskListState()
     class Success(val list: List<Task>) : TaskListState()
+    class DeleteTask(val task: Task) : TaskListState()
   }
 
   private val _tasks = MutableLiveData<TaskListState>()
@@ -75,6 +76,15 @@ class TasksViewModel @ViewModelInject constructor(
     viewModelScope.launch {
       taskRepository.updateTask(task.copy(checked = isChecked))
     }
+
+  fun onTaskSwiped(task: Task) = viewModelScope.launch {
+    _tasks.postValue(TaskListState.DeleteTask(task))
+    taskRepository.deleteTask(task)
+  }
+
+  fun onUndoDeleteClicked(task: Task) = viewModelScope.launch {
+    taskRepository.insertTask(task)
+  }
 
 }
 

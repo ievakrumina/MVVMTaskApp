@@ -8,11 +8,13 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.google.android.material.snackbar.Snackbar
 import com.ik.mvvmtaskapp.R
 import com.ik.mvvmtaskapp.data.Task
@@ -20,6 +22,8 @@ import com.ik.mvvmtaskapp.databinding.FragTasksBinding
 import com.ik.mvvmtaskapp.ui.addedittasks.TaskAction
 import com.ik.mvvmtaskapp.util.onQueryTextChanged
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.frag_tasks.view.*
+
 
 @AndroidEntryPoint
 class TasksFragment : Fragment(R.layout.frag_tasks), TaskAdapter.OnItemClickListener {
@@ -45,6 +49,20 @@ class TasksFragment : Fragment(R.layout.frag_tasks), TaskAdapter.OnItemClickList
         layoutManager = LinearLayoutManager(requireContext())
         setHasFixedSize(true)
       }
+
+      ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.RIGHT or ItemTouchHelper.LEFT) {
+          override fun onMove(
+            recyclerView: RecyclerView,
+            viewHolder: ViewHolder, target: ViewHolder
+          ): Boolean {
+            return false
+          }
+
+          override fun onSwiped(viewHolder: ViewHolder, direction: Int) {
+            val task = taskAdapter.currentList[viewHolder.adapterPosition]
+            viewModel.onTaskSwiped(task)
+          }
+        }).attachToRecyclerView(recyclerViewTasks)
 
       fabAddTask.setOnClickListener { view ->
         val action = TasksFragmentDirections.actionTasksFragmentToAddEditTaskFragment(null, getString(R.string.new_task))
@@ -88,6 +106,16 @@ class TasksFragment : Fragment(R.layout.frag_tasks), TaskAdapter.OnItemClickList
           binding.linearLayoutLoading.visibility = View.VISIBLE
           binding.linearLayoutNoTasks.visibility = View.GONE
           binding.recyclerViewTasks.visibility = View.GONE
+        }
+        is TasksViewModel.TaskListState.DeleteTask -> {
+          Snackbar.make(
+            requireView(),
+            "${getString(R.string.delete_single_task)}: ${taskState.task.name}",
+            Snackbar.LENGTH_SHORT)
+            .setAction(R.string.undo) {
+              viewModel.onUndoDeleteClicked(taskState.task)
+            }
+            .show()
         }
       }
     }
