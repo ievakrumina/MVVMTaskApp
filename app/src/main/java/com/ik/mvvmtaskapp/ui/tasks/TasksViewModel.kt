@@ -32,6 +32,10 @@ class TasksViewModel @ViewModelInject constructor(
   val hideCompletedStatus: StateFlow<Boolean>
     get() = _hideCompletedStatus
 
+  private val _searchQueryState = MutableStateFlow("")
+  val searchQueryState: StateFlow<String>
+    get() = _searchQueryState
+
   private var searchQuery = ""
   private var sortOrder = SortOrder.BY_NAME
   private var hideCompleted = false
@@ -39,6 +43,7 @@ class TasksViewModel @ViewModelInject constructor(
   fun searchQueryTasks(query: String) {
     searchQuery = query
     getTasks()
+    _searchQueryState.value = query
   }
 
   fun hideCompletedTasks(checked: Boolean) {

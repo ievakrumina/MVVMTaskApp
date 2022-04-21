@@ -102,6 +102,8 @@ class TasksViewModelTest {
     val response = MutableStateFlow<Resource<List<Task>>>(listOf(Task("First task")).asSuccess())
     coEvery { repository.getTasks("task", any(), any()) } returns response
     viewModel.searchQueryTasks("task")
+    assertEquals(viewModel.searchQueryState.value, "task")
+
     viewModel.tasks.observeForever {
       when(it) {
         is TasksViewModel.TaskListState.Success -> assertEquals("First task", it.list[0].name)

@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.collect
 @AndroidEntryPoint
 class TasksFragment : Fragment(R.layout.frag_tasks), TaskAdapter.OnItemClickListener {
   private val viewModel: TasksViewModel by viewModels()
+  private lateinit var searchView: SearchView
 
   /** Using onCreate instead of viewModel init block.\
    *  Called to do initial creation of a fragment
@@ -128,7 +129,14 @@ class TasksFragment : Fragment(R.layout.frag_tasks), TaskAdapter.OnItemClickList
     inflater.inflate(R.menu.menu_frag_tasks, menu)
 
     val searchItem = menu.findItem(R.id.action_search)
-    val searchView = searchItem.actionView as SearchView
+    searchView = searchItem.actionView as SearchView
+
+    val pendingQuery = viewModel.searchQueryState.value
+    if (pendingQuery != null && pendingQuery.isNotEmpty()) {
+      searchItem.expandActionView()
+      searchView.setQuery(pendingQuery,false)
+    }
+
 
     searchView.onQueryTextChanged {
       viewModel.searchQueryTasks(it)
@@ -170,5 +178,10 @@ class TasksFragment : Fragment(R.layout.frag_tasks), TaskAdapter.OnItemClickList
 
   override fun onCheckBoxClick(task: Task, isChecked: Boolean) {
     viewModel.onTaskCheckChanged(task, isChecked)
+  }
+
+  override fun onDestroy() {
+    super.onDestroy()
+    searchView.setOnQueryTextListener(null)
   }
 }
