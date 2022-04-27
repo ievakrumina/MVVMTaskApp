@@ -18,6 +18,7 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "com.ex2.hiltespresso.CustomTestRunner"
 
         packagingOptions {
             exclude 'META-INF/DEPENDENCIES'
@@ -29,6 +30,9 @@ android {
             exclude 'META-INF/notice.txt'
             exclude 'META-INF/AL2.0'
             exclude 'META-INF/LGPL2.1'
+            exclude 'win32-x86/attach_hotspot_windows.dll'
+            exclude 'win32-x86-64/attach_hotspot_windows.dll'
+            exclude 'META-INF/licenses/ASM'
             exclude("META-INF/*.kotlin_module")
         }
     }
@@ -106,6 +110,10 @@ dependencies {
     androidTestImplementation "androidx.arch.core:core-testing:$archCoreTestingVersion"
     androidTestImplementation "androidx.test.ext:junit:$testExtJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
+    androidTestImplementation "io.mockk:mockk:$mockkVersion"
+    androidTestImplementation "androidx.fragment:fragment-testing:$fragmentTestingVersion"
+    androidTestImplementation "com.google.dagger:hilt-android-testing:$hiltVersion"
+    kaptAndroidTest "com.google.dagger:hilt-android-compiler:$hiltVersion"
 
     //Test helpers
     testImplementation "androidx.room:room-testing:$roomVersion"

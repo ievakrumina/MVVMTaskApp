@@ -28,6 +28,7 @@ buildscript {
         coroutineTestVersion = "1.4.0"
         archCoreTestingVersion = "2.1.0"
         lottieVersion = "5.0.3"
+        fragmentTestingVersion = "1.4.1"
     }
 
     repositories {
