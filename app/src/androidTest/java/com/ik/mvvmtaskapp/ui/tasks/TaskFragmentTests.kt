@@ -1,40 +1,63 @@
 package com.ik.mvvmtaskapp.ui.tasks
 
-import android.provider.SyncStateContract.Helpers.insert
-import androidx.fragment.app.testing.FragmentScenario
-import androidx.test.ext.junit.rules.ActivityScenarioRule
-import com.ik.mvvmtaskapp.data.TaskRepository
-import com.ik.mvvmtaskapp.ui.MainActivity
+import com.ik.mvvmtaskapp.ui.addedittasks.AddEditTaskFragment
+import com.ik.mvvmtaskapp.ui.deletecompletedtasks.DeleteCompletedTasksFragment
 import com.ik.mvvmtaskapp.ui.tasks.robots.TaskListRobot
-import dagger.Provides
+import com.ik.mvvmtaskapp.utils.launchFragmentInHiltContainer
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-//@HiltAndroidTest
+@HiltAndroidTest
 class TaskFragmentTests {
 
-  //@get:Rule(order = 0)
-  //var hiltRule = HiltAndroidRule(this)
-
-  @get:Rule(order = 1)
-  var activityRule: ActivityScenarioRule<MainActivity> =
-    ActivityScenarioRule(MainActivity::class.java)
-
+  @get:Rule
+  var hiltRule = HiltAndroidRule(this)
 
   @Before
   fun setUp() {
-    //hiltRule.inject()
+    hiltRule.inject()
   }
 
   @Test
-  fun testTaskList() {
+  fun testTaskListWithDataState() {
+    val scenario = launchFragmentInHiltContainer<TasksFragment>{}
     TaskListRobot.apply {
+      //Toolbar
+      assertTaskAtPositionIsDisplayed(position = 0)
       assertAddTaskButtonIsDisplayed()
     }
   }
 
+  @Test
+  fun testTaskListEmptyState() {
+    // TODO
+  }
 
+  @Test
+  fun testTaskListLoadingState() {
+    // TODO
+  }
+
+  @Test
+  fun testTaskListErrorState() {
+    // TODO
+  }
+
+  @Test
+  fun testSearchFromToolbar() {
+    // TODO
+  }
+
+  @Test
+  fun testSortTasks() {
+    // TODO
+  }
+
+  @Test
+  fun testHideCompletedTasks() {
+    // TODO
+  }
 }
