@@ -10,6 +10,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,14 +23,12 @@ import com.ik.mvvmtaskapp.databinding.FragTasksBinding
 import com.ik.mvvmtaskapp.ui.addedittasks.TaskAction
 import com.ik.mvvmtaskapp.util.onQueryTextChanged
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.frag_tasks.view.*
 import kotlinx.coroutines.flow.collect
-
+import kotlinx.coroutines.flow.filterNotNull
 
 @AndroidEntryPoint
 class TasksFragment : Fragment(R.layout.frag_tasks), TaskAdapter.OnItemClickListener {
   private val viewModel: TasksViewModel by viewModels()
-  private lateinit var searchView: SearchView
 
   /** Using onCreate instead of viewModel init block.\
    *  Called to do initial creation of a fragment
@@ -109,7 +108,7 @@ class TasksFragment : Fragment(R.layout.frag_tasks), TaskAdapter.OnItemClickList
           binding.linearLayoutNoTasks.visibility = View.GONE
           binding.recyclerViewTasks.visibility = View.GONE
         }
-        is TasksViewModel.TaskListState.DeleteTask -> {
+        /*is TasksViewModel.TaskListState.DeleteTask -> {
           Snackbar.make(
             requireView(),
             "${getString(R.string.delete_single_task)}: ${taskState.task.name}",
@@ -118,6 +117,23 @@ class TasksFragment : Fragment(R.layout.frag_tasks), TaskAdapter.OnItemClickList
               viewModel.onUndoDeleteClicked(taskState.task)
             }
             .show()
+        }*/
+      }
+    }
+
+    lifecycleScope.launchWhenCreated {
+      viewModel.singleTask.filterNotNull().collect { singleTask ->
+        when(singleTask) {
+          is TasksViewModel.SingleTaskState.DeleteTask -> {
+            Snackbar.make(
+              requireView(),
+              "${getString(R.string.delete_single_task)}: ${singleTask.task.name}",
+              Snackbar.LENGTH_SHORT)
+              .setAction(R.string.undo) {
+                viewModel.onUndoDeleteClicked(singleTask.task)
+              }
+              .show()
+          }
         }
       }
     }
@@ -129,22 +145,19 @@ class TasksFragment : Fragment(R.layout.frag_tasks), TaskAdapter.OnItemClickList
     inflater.inflate(R.menu.menu_frag_tasks, menu)
 
     val searchItem = menu.findItem(R.id.action_search)
-    searchView = searchItem.actionView as SearchView
+    var searchView = searchItem.actionView as SearchView
 
-    val pendingQuery = viewModel.searchQueryState.value
-    if (pendingQuery != null && pendingQuery.isNotEmpty()) {
+    val pendingQuery = viewModel.getSearchQuery()
+    if (pendingQuery.isNotEmpty()) {
       searchItem.expandActionView()
       searchView.setQuery(pendingQuery,false)
     }
-
 
     searchView.onQueryTextChanged {
       viewModel.searchQueryTasks(it)
     }
 
-
-    menu.findItem(R.id.action_hide_completed_tasks).isChecked = viewModel.hideCompletedStatus.value
-
+    menu.findItem(R.id.action_hide_completed_tasks).isChecked = viewModel.getHideCompletedStatus()
   }
 
   override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -178,10 +191,5 @@ class TasksFragment : Fragment(R.layout.frag_tasks), TaskAdapter.OnItemClickList
 
   override fun onCheckBoxClick(task: Task, isChecked: Boolean) {
     viewModel.onTaskCheckChanged(task, isChecked)
-  }
-
-  override fun onDestroy() {
-    super.onDestroy()
-    searchView.setOnQueryTextListener(null)
   }
 }

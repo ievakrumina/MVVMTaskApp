@@ -6,7 +6,7 @@ import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import junit.framework.Assert.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.*
 import org.junit.After
 import org.junit.Before
@@ -33,7 +33,7 @@ class TasksViewModelTest {
 
   @Test
   fun `get all tasks`() = runBlockingTest {
-    val response = MutableStateFlow<Resource<List<Task>>>(listOf(Task("First task")).asSuccess())
+    val response = flowOf(listOf(Task("First task")).asSuccess())
     coEvery { repository.getTasks(any(), any(), any()) } returns response
     viewModel.searchQueryTasks("")
     viewModel.tasks.observeForever {
@@ -42,17 +42,16 @@ class TasksViewModelTest {
         is TasksViewModel.TaskListState.Error -> fail("Unexpected state")
         is TasksViewModel.TaskListState.Empty -> fail("Unexpected state")
         is TasksViewModel.TaskListState.Loading -> fail("Unexpected state")
-        is TasksViewModel.TaskListState.DeleteTask -> fail("Unexpected state")
       }
     }
   }
 
   @Test
   fun `hide completed tasks`() = runBlockingTest {
-    val response = MutableStateFlow<Resource<List<Task>>>(listOf(Task("First task")).asSuccess())
+    val response = flowOf(listOf(Task("First task")).asSuccess())
     coEvery { repository.getTasks(any(), any(), true) } returns response
     viewModel.hideCompletedTasks(true)
-    assertEquals(viewModel.hideCompletedStatus.value, true)
+    assertEquals(viewModel.getHideCompletedStatus(), true)
 
     viewModel.tasks.observeForever {
       when(it) {
@@ -60,14 +59,13 @@ class TasksViewModelTest {
         is TasksViewModel.TaskListState.Error -> fail("Unexpected state")
         is TasksViewModel.TaskListState.Empty -> fail("Unexpected state")
         is TasksViewModel.TaskListState.Loading -> fail("Unexpected state")
-        is TasksViewModel.TaskListState.DeleteTask -> fail("Unexpected state")
       }
     }
   }
 
   @Test
   fun `sort tasks by date`() = runBlockingTest {
-    val response = MutableStateFlow<Resource<List<Task>>>(listOf(Task("First task")).asSuccess())
+    val response = flowOf(listOf(Task("First task")).asSuccess())
     coEvery { repository.getTasks(any(), SortOrder.BY_DATE, any()) } returns response
     viewModel.sortTasksByDate()
     viewModel.tasks.observeForever {
@@ -76,14 +74,13 @@ class TasksViewModelTest {
         is TasksViewModel.TaskListState.Error -> fail("Unexpected state")
         is TasksViewModel.TaskListState.Empty -> fail("Unexpected state")
         is TasksViewModel.TaskListState.Loading -> fail("Unexpected state")
-        is TasksViewModel.TaskListState.DeleteTask -> fail("Unexpected state")
       }
     }
   }
 
   @Test
   fun `sort tasks by name`() = runBlockingTest {
-    val response = MutableStateFlow<Resource<List<Task>>>(listOf(Task("First task")).asSuccess())
+    val response = flowOf(listOf(Task("First task")).asSuccess())
     coEvery { repository.getTasks(any(), SortOrder.BY_NAME, any()) } returns response
     viewModel.sortTasksByName()
     viewModel.tasks.observeForever {
@@ -92,17 +89,16 @@ class TasksViewModelTest {
         is TasksViewModel.TaskListState.Error -> fail("Unexpected state")
         is TasksViewModel.TaskListState.Empty -> fail("Unexpected state")
         is TasksViewModel.TaskListState.Loading -> fail("Unexpected state")
-        is TasksViewModel.TaskListState.DeleteTask -> fail("Unexpected state")
       }
     }
   }
 
   @Test
   fun `search for existing tasks`() = runBlockingTest {
-    val response = MutableStateFlow<Resource<List<Task>>>(listOf(Task("First task")).asSuccess())
+    val response = flowOf(listOf(Task("First task")).asSuccess())
     coEvery { repository.getTasks("task", any(), any()) } returns response
     viewModel.searchQueryTasks("task")
-    assertEquals(viewModel.searchQueryState.value, "task")
+    assertEquals(viewModel.getSearchQuery(), "task")
 
     viewModel.tasks.observeForever {
       when(it) {
@@ -110,14 +106,13 @@ class TasksViewModelTest {
         is TasksViewModel.TaskListState.Error -> fail("Unexpected state")
         is TasksViewModel.TaskListState.Empty -> fail("Unexpected state")
         is TasksViewModel.TaskListState.Loading -> fail("Unexpected state")
-        is TasksViewModel.TaskListState.DeleteTask -> fail("Unexpected state")
       }
     }
   }
 
   @Test
   fun `empty list state`() = runBlockingTest {
-    val response = MutableStateFlow<Resource<List<Task>>>(emptyList<Task>().asSuccess())
+    val response = flowOf(emptyList<Task>().asSuccess())
     coEvery { repository.getTasks(any(), any(), any()) } returns response
     viewModel.searchQueryTasks("Invalid query")
     viewModel.tasks.observeForever {
@@ -126,14 +121,13 @@ class TasksViewModelTest {
         is TasksViewModel.TaskListState.Error -> fail("Unexpected state")
         is TasksViewModel.TaskListState.Empty -> {}
         is TasksViewModel.TaskListState.Loading -> fail("Unexpected state")
-        is TasksViewModel.TaskListState.DeleteTask -> fail("Unexpected state")
       }
     }
   }
 
   @Test
   fun `list loading state`() = runBlockingTest {
-    val response = MutableStateFlow<Resource<List<Task>>>(listOf<Task>().asLoading())
+    val response = flowOf(listOf<Task>().asLoading())
     coEvery { repository.getTasks(any(), any(), any()) } returns response
     viewModel.searchQueryTasks("")
     viewModel.tasks.observeForever {
@@ -141,24 +135,22 @@ class TasksViewModelTest {
         is TasksViewModel.TaskListState.Success -> fail("Unexpected state")
         is TasksViewModel.TaskListState.Error -> fail("Unexpected state")
         is TasksViewModel.TaskListState.Empty -> fail("Unexpected state")
-        is TasksViewModel.TaskListState.Loading -> {}
-        is TasksViewModel.TaskListState.DeleteTask -> fail("Unexpected state")
+        is TasksViewModel.TaskListState.Loading -> { }
       }
       }
     }
 
   @Test
   fun `list error state`() = runBlockingTest {
-    val response = MutableStateFlow<Resource<List<Task>>>(listOf<Task>().asError())
+    val response = flowOf(listOf<Task>().asError())
     coEvery { repository.getTasks(any(), any(), any()) } returns response
     viewModel.searchQueryTasks("")
     viewModel.tasks.observeForever {
       when(it) {
         is TasksViewModel.TaskListState.Success -> fail("Unexpected state")
-        is TasksViewModel.TaskListState.Error -> {}
+        is TasksViewModel.TaskListState.Error -> { }
         is TasksViewModel.TaskListState.Empty -> fail("Unexpected state")
         is TasksViewModel.TaskListState.Loading -> fail("Unexpected state")
-        is TasksViewModel.TaskListState.DeleteTask -> fail("Unexpected state")
       }
     }
   }
@@ -176,15 +168,9 @@ class TasksViewModelTest {
     val task = Task("Task")
     coEvery { repository.deleteTask(any())} just Runs
     viewModel.onTaskSwiped(task)
-    viewModel.tasks.observeForever { taskState ->
-      when(taskState) {
-        is TasksViewModel.TaskListState.DeleteTask ->
-          assertEquals(taskState.task, task)
-        TasksViewModel.TaskListState.Empty -> fail("Unexpected state")
-        TasksViewModel.TaskListState.Error -> fail("Unexpected state")
-        TasksViewModel.TaskListState.Loading -> fail("Unexpected state")
-        is TasksViewModel.TaskListState.Success -> fail("Unexpected state")
-      }
+    when (val result = viewModel.singleTask.value) {
+      is TasksViewModel.SingleTaskState.DeleteTask ->
+        assertEquals(task, result.task)
     }
     coVerify(exactly = 1) { repository.deleteTask(task) }
   }

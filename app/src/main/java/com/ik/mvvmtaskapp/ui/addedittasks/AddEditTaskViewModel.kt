@@ -1,15 +1,15 @@
 package com.ik.mvvmtaskapp.ui.addedittasks
 
-import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.ik.mvvmtaskapp.data.Task
 import com.ik.mvvmtaskapp.data.TaskRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class AddEditTaskViewModel @ViewModelInject constructor(
-  private val taskRepository: TaskRepository,
-  @Assisted private val state: SavedStateHandle
+  private val taskRepository: TaskRepository
 ) : ViewModel() {
 
   sealed class AddEditTaskState {
@@ -17,20 +17,25 @@ class AddEditTaskViewModel @ViewModelInject constructor(
     data class Success(val result: TaskAction) : AddEditTaskState()
   }
 
-  private val _taskUiState = MutableLiveData<AddEditTaskState>()
-  val taskUiState: LiveData<AddEditTaskState>
+  // For single UI event use stateFlow according to Google guidelines
+  private val _taskUiState = MutableStateFlow<AddEditTaskState?>(null)
+  val taskUiState: StateFlow<AddEditTaskState?>
     get() = _taskUiState
 
-  val task = state.get<Task>("task")
+  private var task: Task?  = null
+  private var taskName = task?.name?: ""
 
-  var taskName = state?.get<String>("taskName") ?: task?.name ?: ""
-    set(value) {
-      field = value
-      state.set("taskName", value)
-    }
+  fun setTaskState(state: AddEditTaskState?) {
+    _taskUiState.value = null
+  }
 
   fun updateTaskName(name: String) {
     taskName = name
+  }
+
+  fun setCurrentTask(currentTask: Task?) {
+    task = currentTask
+    if (task != null) taskName = task?.name.toString()
   }
 
   fun onSaveClick() {
@@ -43,8 +48,8 @@ class AddEditTaskViewModel @ViewModelInject constructor(
       val newTask = Task(name = taskName)
       createTask(newTask)
     } else {
-      val updatedTask = task.copy(name = taskName)
-      updateTask(updatedTask)
+      val updatedTask = task?.copy(name = taskName)
+      updatedTask?.let { updateTask(it) }
     }
   }
 
@@ -52,9 +57,9 @@ class AddEditTaskViewModel @ViewModelInject constructor(
     viewModelScope.launch {
       when(taskState) {
         is AddEditTaskState.Success ->
-          _taskUiState.postValue(AddEditTaskState.Success(taskState.result))
+          _taskUiState.value = AddEditTaskState.Success(taskState.result)
         is AddEditTaskState.Invalid ->
-          _taskUiState.postValue(AddEditTaskState.Invalid(taskState.error))
+          _taskUiState.value = AddEditTaskState.Invalid(taskState.error)
       }
     }
   }

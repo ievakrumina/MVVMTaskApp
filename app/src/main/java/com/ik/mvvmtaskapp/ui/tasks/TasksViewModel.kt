@@ -21,36 +21,40 @@ class TasksViewModel @ViewModelInject constructor(
     object Loading : TaskListState()
     object Empty : TaskListState()
     class Success(val list: List<Task>) : TaskListState()
-    class DeleteTask(val task: Task) : TaskListState()
+  }
+
+  sealed class SingleTaskState {
+    class DeleteTask(val task: Task) : SingleTaskState()
   }
 
   private val _tasks = MutableLiveData<TaskListState>()
   val tasks: LiveData<TaskListState>
     get() = _tasks
 
-  private val _hideCompletedStatus = MutableStateFlow(false)
-  val hideCompletedStatus: StateFlow<Boolean>
-    get() = _hideCompletedStatus
-
-  private val _searchQueryState = MutableStateFlow("")
-  val searchQueryState: StateFlow<String>
-    get() = _searchQueryState
+  private val _singleTask = MutableStateFlow<SingleTaskState?>(null)
+  val singleTask: StateFlow<SingleTaskState?> = _singleTask
 
   private var searchQuery = ""
   private var sortOrder = SortOrder.BY_NAME
   private var hideCompleted = false
 
+  fun updateSingleTaskState(state: SingleTaskState?) {
+    _singleTask.value = state
+  }
+
   fun searchQueryTasks(query: String) {
     searchQuery = query
     getTasks()
-    _searchQueryState.value = query
   }
+
+  fun getSearchQuery(): String = searchQuery
 
   fun hideCompletedTasks(checked: Boolean) {
     hideCompleted = checked
     getTasks()
-    _hideCompletedStatus.value = checked
   }
+
+  fun getHideCompletedStatus(): Boolean = hideCompleted
 
   fun sortTasksByDate() {
     sortOrder = SortOrder.BY_DATE
@@ -69,17 +73,7 @@ class TasksViewModel @ViewModelInject constructor(
       //Observe list of tasks from repository
       taskRepository.getTasks(searchQuery, sortOrder, hideCompleted)
         .collect { taskList ->
-          when (taskList) {
-            is Resource.Error -> _tasks.postValue(TaskListState.Error)
-            is Resource.Loading -> _tasks.postValue(TaskListState.Loading)
-            is Resource.Success -> {
-              when (taskList.data.isEmpty()) {
-                true -> _tasks.postValue(TaskListState.Empty)
-                //Post value to live data once the list is received
-                false -> _tasks.postValue(TaskListState.Success(taskList.data))
-              }
-            }
-          }
+          handleTaskList(taskList)
         }
     }
   }
@@ -90,12 +84,30 @@ class TasksViewModel @ViewModelInject constructor(
     }
 
   fun onTaskSwiped(task: Task) = viewModelScope.launch {
-    _tasks.postValue(TaskListState.DeleteTask(task))
+    _singleTask.value = SingleTaskState.DeleteTask(task)
     taskRepository.deleteTask(task)
   }
 
   fun onUndoDeleteClicked(task: Task) = viewModelScope.launch {
     taskRepository.insertTask(task)
+  }
+
+  private fun handleTaskList(taskList: Resource<List<Task>>) {
+    when (taskList) {
+      is Resource.Error -> _tasks.postValue(TaskListState.Error)
+      is Resource.Loading -> _tasks.postValue(TaskListState.Loading)
+      is Resource.Success -> {
+        handleSuccessfulTaskList(taskList)
+      }
+    }
+  }
+
+  private fun handleSuccessfulTaskList(taskList: Resource.Success<List<Task>>) {
+    when (taskList.data.isEmpty()) {
+      true -> _tasks.postValue(TaskListState.Empty)
+      //Post value to live data once the list is received
+      false -> _tasks.postValue(TaskListState.Success(taskList.data))
+    }
   }
 
 }
