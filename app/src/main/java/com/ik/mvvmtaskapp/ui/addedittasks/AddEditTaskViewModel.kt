@@ -5,8 +5,6 @@ import androidx.lifecycle.*
 import com.ik.mvvmtaskapp.data.Task
 import com.ik.mvvmtaskapp.data.TaskRepository
 import com.ik.mvvmtaskapp.util.SingleLiveEvent
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class AddEditTaskViewModel @ViewModelInject constructor(
@@ -35,18 +33,30 @@ class AddEditTaskViewModel @ViewModelInject constructor(
   }
 
   fun onSaveClick() {
+    if (handleEmptyTask()) return
+    if (task == null) {
+      handleCreateTask()
+    } else {
+      handleUpdateTask()
+    }
+  }
+
+  private fun handleEmptyTask(): Boolean {
     if (taskName.isBlank()) {
       addEditTaskResult(AddEditTaskState.Invalid(InvalidTask.EMPTY))
-      return
+      return true
     }
+    return false
+  }
 
-    if (task == null) {
-      val newTask = Task(name = taskName)
-      createTask(newTask)
-    } else {
-      val updatedTask = task?.copy(name = taskName)
-      updatedTask?.let { updateTask(it) }
-    }
+  private fun handleUpdateTask() {
+    val updatedTask = task?.copy(name = taskName)
+    updatedTask?.let { updateTask(it) }
+  }
+
+  private fun handleCreateTask() {
+    val newTask = Task(name = taskName)
+    createTask(newTask)
   }
 
   private fun addEditTaskResult(taskState: AddEditTaskState) {
