@@ -5,8 +5,7 @@ import androidx.lifecycle.*
 import com.ik.mvvmtaskapp.data.Resource
 import com.ik.mvvmtaskapp.data.Task
 import com.ik.mvvmtaskapp.data.TaskRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import com.ik.mvvmtaskapp.util.SingleLiveEvent
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -31,16 +30,13 @@ class TasksViewModel @ViewModelInject constructor(
   val tasks: LiveData<TaskListState>
     get() = _tasks
 
-  private val _singleTask = MutableStateFlow<SingleTaskState?>(null)
-  val singleTask: StateFlow<SingleTaskState?> = _singleTask
+  private val _singleTask = SingleLiveEvent<SingleTaskState>()
+  val singleTask: SingleLiveEvent<SingleTaskState>
+    get() = _singleTask
 
   private var searchQuery = ""
   private var sortOrder = SortOrder.BY_NAME
   private var hideCompleted = false
-
-  fun updateSingleTaskState(state: SingleTaskState?) {
-    _singleTask.value = state
-  }
 
   fun searchQueryTasks(query: String) {
     searchQuery = query
@@ -84,7 +80,7 @@ class TasksViewModel @ViewModelInject constructor(
     }
 
   fun onTaskSwiped(task: Task) = viewModelScope.launch {
-    _singleTask.value = SingleTaskState.DeleteTask(task)
+    _singleTask.postValue(SingleTaskState.DeleteTask(task))
     taskRepository.deleteTask(task)
   }
 

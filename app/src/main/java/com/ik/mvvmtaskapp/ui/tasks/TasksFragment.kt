@@ -108,21 +108,10 @@ class TasksFragment : Fragment(R.layout.frag_tasks), TaskAdapter.OnItemClickList
           binding.linearLayoutNoTasks.visibility = View.GONE
           binding.recyclerViewTasks.visibility = View.GONE
         }
-        /*is TasksViewModel.TaskListState.DeleteTask -> {
-          Snackbar.make(
-            requireView(),
-            "${getString(R.string.delete_single_task)}: ${taskState.task.name}",
-            Snackbar.LENGTH_SHORT)
-            .setAction(R.string.undo) {
-              viewModel.onUndoDeleteClicked(taskState.task)
-            }
-            .show()
-        }*/
       }
     }
 
-    lifecycleScope.launchWhenCreated {
-      viewModel.singleTask.filterNotNull().collect { singleTask ->
+      viewModel.singleTask.observe(viewLifecycleOwner) { singleTask ->
         when(singleTask) {
           is TasksViewModel.SingleTaskState.DeleteTask -> {
             Snackbar.make(
@@ -134,7 +123,6 @@ class TasksFragment : Fragment(R.layout.frag_tasks), TaskAdapter.OnItemClickList
               }
               .show()
           }
-        }
       }
     }
 

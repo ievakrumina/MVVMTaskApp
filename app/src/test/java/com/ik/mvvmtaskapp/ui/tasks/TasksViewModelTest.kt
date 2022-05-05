@@ -168,9 +168,11 @@ class TasksViewModelTest {
     val task = Task("Task")
     coEvery { repository.deleteTask(any())} just Runs
     viewModel.onTaskSwiped(task)
-    when (val result = viewModel.singleTask.value) {
-      is TasksViewModel.SingleTaskState.DeleteTask ->
-        assertEquals(task, result.task)
+    viewModel.singleTask.observeForever {
+      when(it) {
+        is TasksViewModel.SingleTaskState.DeleteTask ->
+          assertEquals(task, it.task)
+      }
     }
     coVerify(exactly = 1) { repository.deleteTask(task) }
   }
