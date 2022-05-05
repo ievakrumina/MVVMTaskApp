@@ -44,8 +44,7 @@ class AddEditTaskFragment : Fragment(R.layout.frag_add_edit_task) {
       }
     }
 
-    lifecycleScope.launchWhenCreated {
-      viewModel.taskUiState.filterNotNull().collect {  taskState ->
+      viewModel.taskState.observe(viewLifecycleOwner) {  taskState ->
         when(taskState) {
           is AddEditTaskViewModel.AddEditTaskState.Invalid -> {
             when(taskState.error) {
@@ -62,26 +61,6 @@ class AddEditTaskFragment : Fragment(R.layout.frag_add_edit_task) {
             findNavController().popBackStack()
           }
         }
-        viewModel.setTaskState(null)
       }
-    }
-    /*viewModel.taskUiState.observe(viewLifecycleOwner) { taskState ->
-      when (taskState) {
-        is AddEditTaskViewModel.AddEditTaskState.Invalid -> {
-          when(taskState.error) {
-            InvalidTask.EMPTY ->
-              Snackbar.make(requireView(), R.string.empty_task_error, Snackbar.LENGTH_SHORT).show()
-          }
-        }
-        is AddEditTaskViewModel.AddEditTaskState.Success -> {
-          binding.editTaskName.clearFocus()
-          setFragmentResult(
-            "add_edit_request",
-            bundleOf("add_edit_result" to taskState.result)
-          )
-          findNavController().popBackStack()
-        }
-      }
-    }*/
   }
 }

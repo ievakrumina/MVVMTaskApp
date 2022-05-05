@@ -38,12 +38,13 @@ class AddEditTaskViewModelTest {
     @Test
     fun `error when save new task without name`() = runBlockingTest {
         viewModel.onSaveClick()
-        when (val result = viewModel.taskUiState.value) {
-            is AddEditTaskViewModel.AddEditTaskState.Invalid ->
-                assertEquals(result.error, InvalidTask.EMPTY)
-            is AddEditTaskViewModel.AddEditTaskState.Success -> fail("Unexpected state")
+        viewModel.taskState.observeForever{ state ->
+            when (state) {
+                is AddEditTaskViewModel.AddEditTaskState.Invalid ->
+                    assertEquals(InvalidTask.EMPTY, state.error)
+                is AddEditTaskViewModel.AddEditTaskState.Success -> fail("Unexpected state")
+            }
         }
-
     }
 
     @Test
@@ -53,12 +54,13 @@ class AddEditTaskViewModelTest {
         viewModel.updateTaskName("")
         viewModel.onSaveClick()
 
-        when (val result = viewModel.taskUiState.value) {
-            is AddEditTaskViewModel.AddEditTaskState.Invalid ->
-                assertEquals(result.error, InvalidTask.EMPTY)
-            is AddEditTaskViewModel.AddEditTaskState.Success -> fail("Unexpected state")
+        viewModel.taskState.observeForever{ state ->
+            when (state) {
+                is AddEditTaskViewModel.AddEditTaskState.Invalid ->
+                    assertEquals(InvalidTask.EMPTY, state.error)
+                is AddEditTaskViewModel.AddEditTaskState.Success -> fail("Unexpected state")
+            }
         }
-
     }
 
     @Test
@@ -66,11 +68,12 @@ class AddEditTaskViewModelTest {
         coEvery { repository.insertTask(any()) } just Runs
         viewModel.updateTaskName("First task")
         viewModel.onSaveClick()
-        when (val result = viewModel.taskUiState.value) {
-            is AddEditTaskViewModel.AddEditTaskState.Invalid -> fail("Unexpected state")
-            is AddEditTaskViewModel.AddEditTaskState.Success ->
-                assertEquals(result.result, TaskAction.CREATED)
-
+        viewModel.taskState.observeForever{ state ->
+            when (state) {
+                is AddEditTaskViewModel.AddEditTaskState.Invalid -> fail("Unexpected state")
+                is AddEditTaskViewModel.AddEditTaskState.Success ->
+                    assertEquals(TaskAction.CREATED, state.result)
+            }
         }
         coVerify(exactly = 1) { repository.insertTask(any()) }
     }
@@ -82,10 +85,12 @@ class AddEditTaskViewModelTest {
         coEvery { repository.updateTask(any()) } just Runs
         viewModel.setCurrentTask(task)
         viewModel.onSaveClick()
-        when (val result = viewModel.taskUiState.value) {
-            is AddEditTaskViewModel.AddEditTaskState.Invalid -> fail("Unexpected state")
-            is AddEditTaskViewModel.AddEditTaskState.Success ->
-                assertEquals(result.result, TaskAction.UPDATED)
+        viewModel.taskState.observeForever{ state ->
+            when (state) {
+                is AddEditTaskViewModel.AddEditTaskState.Invalid -> fail("Unexpected state")
+                is AddEditTaskViewModel.AddEditTaskState.Success ->
+                    assertEquals(TaskAction.UPDATED, state.result)
+            }
         }
 
         coVerify(exactly = 1) { repository.updateTask(task) }

@@ -4,6 +4,7 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.ik.mvvmtaskapp.data.Task
 import com.ik.mvvmtaskapp.data.TaskRepository
+import com.ik.mvvmtaskapp.util.SingleLiveEvent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -17,17 +18,12 @@ class AddEditTaskViewModel @ViewModelInject constructor(
     data class Success(val result: TaskAction) : AddEditTaskState()
   }
 
-  // For single UI event use stateFlow according to Google guidelines
-  private val _taskUiState = MutableStateFlow<AddEditTaskState?>(null)
-  val taskUiState: StateFlow<AddEditTaskState?>
-    get() = _taskUiState
+  private val _taskState = SingleLiveEvent<AddEditTaskState>()
+  val taskState: SingleLiveEvent<AddEditTaskState>
+    get() = _taskState
 
   private var task: Task?  = null
   private var taskName = task?.name?: ""
-
-  fun setTaskState(state: AddEditTaskState?) {
-    _taskUiState.value = null
-  }
 
   fun updateTaskName(name: String) {
     taskName = name
@@ -57,9 +53,9 @@ class AddEditTaskViewModel @ViewModelInject constructor(
     viewModelScope.launch {
       when(taskState) {
         is AddEditTaskState.Success ->
-          _taskUiState.value = AddEditTaskState.Success(taskState.result)
+          _taskState.postValue(AddEditTaskState.Success(taskState.result))
         is AddEditTaskState.Invalid ->
-          _taskUiState.value = AddEditTaskState.Invalid(taskState.error)
+          _taskState.postValue(AddEditTaskState.Invalid(taskState.error))
       }
     }
   }
