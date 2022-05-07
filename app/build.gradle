@@ -60,7 +60,6 @@ android {
 
     testOptions {
         animationsDisabled = true
-        execution 'ANDROIDX_TEST_ORCHESTRATOR'
     }
 }
 
@@ -122,6 +121,5 @@ dependencies {
     kaptAndroidTest "com.google.dagger:hilt-android-compiler:$hiltVersion"
 
     //Test helpers
-    testImplementation "androidx.room:room-testing:$roomVersion"
-    androidTestUtil 'androidx.test:orchestrator:1.2.0'
+    androidTestImplementation "androidx.room:room-testing:$roomVersion"
 }

@@ -1,10 +1,9 @@
 package com.ik.mvvmtaskapp.data
 
-import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
 import com.ik.mvvmtaskapp.ui.tasks.SortOrder
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import junit.framework.Assert.*
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.*
@@ -12,22 +11,27 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import javax.inject.Inject
+import javax.inject.Named
 
-
+@HiltAndroidTest
 class TaskDaoTest {
 
-  @get:Rule
+  @get:Rule(order = 0)
+  var hiltRule = HiltAndroidRule(this)
+
+  @get:Rule(order = 1)
   var instantTaskExecutorRule = InstantTaskExecutorRule()
 
-  private lateinit var taskDatabase: TaskDatabase
+  @Inject
+  @Named("test_db")
+  lateinit var taskDatabase: TaskDatabase
+
   private lateinit var taskDao: TaskDao
 
   @Before
   fun setUp() {
-    val context = ApplicationProvider.getApplicationContext<Context>()
-    taskDatabase = Room.inMemoryDatabaseBuilder(context, TaskDatabase::class.java)
-      .allowMainThreadQueries()
-      .build()
+    hiltRule.inject()
     taskDao = taskDatabase.taskDao()
   }
 
