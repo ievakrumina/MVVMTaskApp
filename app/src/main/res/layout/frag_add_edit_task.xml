@@ -19,7 +19,7 @@
             android:inputType="text"
             android:imeOptions="actionDone"/>
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/text_view_task_created"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
