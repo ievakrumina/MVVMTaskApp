@@ -66,7 +66,7 @@ class TasksFragment : Fragment(R.layout.frag_tasks), TaskAdapter.OnItemClickList
         }).attachToRecyclerView(recyclerViewTasks)
 
       fabAddTask.setOnClickListener { view ->
-        val action = TasksFragmentDirections.actionTasksFragmentToAddEditTaskFragment(null, getString(R.string.new_task))
+        val action = TasksFragmentDirections.actionTasksFragmentToAddEditTaskFragment(getString(R.string.new_task), null)
         view.findNavController().navigate(action)
       }
     }
@@ -173,7 +173,7 @@ class TasksFragment : Fragment(R.layout.frag_tasks), TaskAdapter.OnItemClickList
   }
 
   override fun onItemClick(task: Task) {
-    val action = TasksFragmentDirections.actionTasksFragmentToAddEditTaskFragment(task, getString(R.string.edit_task))
+    val action = TasksFragmentDirections.actionTasksFragmentToAddEditTaskFragment(getString(R.string.edit_task), task)
     view?.findNavController()?.navigate(action)
   }
 

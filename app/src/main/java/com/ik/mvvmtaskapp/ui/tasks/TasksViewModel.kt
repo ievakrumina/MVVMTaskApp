@@ -1,17 +1,20 @@
 package com.ik.mvvmtaskapp.ui.tasks
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
+import com.ik.mvvmtaskapp.OpenForTesting
 import com.ik.mvvmtaskapp.data.Resource
 import com.ik.mvvmtaskapp.data.Task
 import com.ik.mvvmtaskapp.data.TaskRepository
 import com.ik.mvvmtaskapp.util.SingleLiveEvent
-import kotlinx.coroutines.flow.collect
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 private const val TAG = "TaskViewModel"
 
-class TasksViewModel @ViewModelInject constructor(
+@OpenForTesting
+@HiltViewModel
+class TasksViewModel @Inject constructor(
   private val taskRepository: TaskRepository
 ) : ViewModel() {
 

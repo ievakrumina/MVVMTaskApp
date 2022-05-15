@@ -1,12 +1,14 @@
 package com.ik.mvvmtaskapp.ui.deletecompletedtasks
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ik.mvvmtaskapp.data.TaskRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class DeleteCompletedTasksViewModel@ViewModelInject constructor(
+@HiltViewModel
+class DeleteCompletedTasksViewModel@Inject constructor(
   private val taskRepository: TaskRepository
 ) : ViewModel() {
 
