@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MVVM Task App</string>
+    <string name="app_name">Simple List</string>
     <string name="task_name">Task name</string>
     <string name="search">Search</string>
     <string name="sort">Sort</string>
