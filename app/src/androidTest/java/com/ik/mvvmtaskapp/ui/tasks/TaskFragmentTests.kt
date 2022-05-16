@@ -14,6 +14,7 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import io.mockk.*
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import javax.inject.Inject
@@ -129,6 +130,18 @@ class TaskFragmentTests {
   }
 
   @Test
+  fun testUndoDeleteSingleTask() = runTest {
+    val task = Task("First task")
+    insertTask(task)
+    launchFragmentInHiltContainer<TasksFragment>()
+    TaskListRobot.apply {
+      deleteTaskAtPosition(0)
+      clickOnUndoDeleteTask()
+      assertTaskAtPositionIsDisplayed(0)
+    }
+  }
+
+  @Test
   fun testDeleteCompletedTasks() {
     val navController = mockk<NavController>(relaxed = true)
     launchFragmentInHiltContainer<TasksFragment>{
@@ -175,6 +188,18 @@ class TaskFragmentTests {
         navController.navigate(TasksFragmentDirections.actionTasksFragmentToAddEditTaskFragment(title, null))
       }
     }
+  }
+
+  @Ignore
+  @Test
+  fun testReceiveNewTaskData() {
+    // TODO
+  }
+
+  @Ignore
+  @Test
+  fun testReceiveEditTaskData() {
+    // TODO
   }
 
   private suspend fun insertTask(task: Task) {
