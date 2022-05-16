@@ -90,6 +90,7 @@ class TasksFragment : Fragment(R.layout.frag_tasks), TaskAdapter.OnItemClickList
           binding.linearLayoutLoading.visibility = View.GONE
           binding.linearLayoutNoTasks.visibility = View.VISIBLE
           binding.recyclerViewTasks.visibility = View.GONE
+          taskAdapter.submitList(emptyList())
         }
         is TasksViewModel.TaskListState.Success -> {
           binding.linearLayoutLoading.visibility = View.GONE
