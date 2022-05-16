@@ -35,6 +35,7 @@ object TaskListRobot {
   fun clickOnTaskAtPosition(position: Int) = R.id.text_view_task.clickOnItemAt(position)
   fun deleteTaskAtPosition(position: Int) = R.id.text_view_task.swipeToLeftAtPosition(position)
   fun assertDeleteTaskToastIsDisplayed(name: String) = assertSnackBar(name)
+  fun clickOnUndoDeleteTask() = R.string.undo.clickWithText()
 
   fun clickOnCheckBoxForTaskAtPosition(position: Int) = R.id.check_box_completed.clickOnItemAt(position)
   fun assertTaskIsChecked(position: Int, isChecked: Boolean = true) =
@@ -43,4 +44,8 @@ object TaskListRobot {
   fun assertAddTaskButtonIsDisplayed() = R.id.fab_add_task.assertVisibility()
   fun clickOnAddTaskButton() = R.id.fab_add_task.clickWithId()
 
+  fun assertNewTaskToastIsDisplayed() = assertSnackBar(R.string.task_created)
+  fun assertEditTaskToastIsDisplayed() = assertSnackBar(R.string.task_updated)
+
+  fun assertTaskCount(count: Int) = R.id.recycler_view_tasks.assertChildCount(count)
 }

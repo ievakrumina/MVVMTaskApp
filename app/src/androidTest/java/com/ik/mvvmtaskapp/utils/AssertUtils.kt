@@ -83,6 +83,10 @@ fun Int.assertHasDescendantTextAtPosition(text: String, position: Int=0): ViewIn
         .check(
         matches(isDisplayed()))
 
+@VisibleForTesting
+fun Int.assertChildCount(count: Int): ViewInteraction = onView(withId(this))
+    .check(matches(hasChildCount(count)))
+
 
 @VisibleForTesting
 fun assertSnackBar(textId: Int): ViewInteraction =
@@ -101,5 +105,13 @@ fun Int.assertCheckBoxIsChecked(position: Int = 0, isChecked: Boolean = true) {
             .check(matches(isChecked()))
         false -> onView(UiInteractionUtils().withIndex(allOf(withId(this)), position))
             .check(matches(not(isChecked())))
+    }
+}
+
+@VisibleForTesting
+fun Int.assertTextVisibility(visible: Boolean = true) {
+    when(visible) {
+        true -> onView(withText(this)).check(matches(isDisplayed()))
+        false -> onView(withText(this)).check(doesNotExist())
     }
 }
