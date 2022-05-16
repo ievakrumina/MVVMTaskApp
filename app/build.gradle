@@ -6,8 +6,8 @@ plugins {
     id 'androidx.navigation.safeargs.kotlin'
     id 'kotlin-allopen'
     id 'kotlin-parcelize'
+    id 'com.gladed.androidgitversion' version '0.4.14'
 }
-
 android {
     compileSdk rootProject.compileSdkVersion
 
@@ -15,8 +15,8 @@ android {
         applicationId "com.ik.mvvmtaskapp"
         minSdk rootProject.minSdkVersion
         targetSdk rootProject.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode androidGitVersion.code()
+        versionName androidGitVersion.name()
 
         testInstrumentationRunner "com.ik.mvvmtaskapp.hiltespresso.CustomTestRunner"
         testInstrumentationRunnerArguments clearPackageData: 'true'
@@ -40,8 +40,15 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            debuggable false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+
+        debug {
+            applicationIdSuffix = ".debug"
+            debuggable true
+            minifyEnabled false
         }
     }
 
@@ -104,21 +111,21 @@ dependencies {
     // Dagger Hilt
     implementation "com.google.dagger:hilt-android:$hiltVersion"
     kapt "com.google.dagger:hilt-android-compiler:$hiltVersion"
-    //implementation "androidx.hilt:hilt-lifecycle-viewmodel:$hiltAndroidXVersion"
-    //kapt "androidx.hilt:hilt-compiler:$hiltAndroidXVersion"
 
     // DataStore
     implementation "androidx.datastore:datastore-preferences:$dataStoreVersion"
 
-    //LottieAnimation
+    // LottieAnimation
     implementation "com.airbnb.android:lottie:$lottieVersion"
 
-    //Test
+    // Unit Test
     testImplementation "junit:junit:$junitVersion"
     testImplementation "io.mockk:mockk:$mockkVersion"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutineTestVersion"
     testImplementation "androidx.arch.core:core-testing:$archCoreTestingVersion"
     testImplementation "androidx.test:core-ktx:$testCoreVersion"
+
+    // Instrumentation Test
     androidTestImplementation "junit:junit:$junitVersion"
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutineTestVersion"
     androidTestImplementation "androidx.arch.core:core-testing:$archCoreTestingVersion"
@@ -137,4 +144,9 @@ dependencies {
 
 kapt {
     correctErrorTypes true
+}
+
+task printVersion {
+    println androidGitVersion.code()
+    println androidGitVersion.name()
 }
