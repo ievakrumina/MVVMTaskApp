@@ -21,4 +21,6 @@ class UiInteractionUtils {
             }
         }
     }
+
+    fun waitFor(t: Long) = Thread.sleep(t)
 }

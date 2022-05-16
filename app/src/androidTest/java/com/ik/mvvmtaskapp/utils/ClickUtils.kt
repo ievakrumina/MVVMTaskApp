@@ -24,8 +24,12 @@ fun Int.clickWithId(parent: Matcher<View>? = null) {
 @VisibleForTesting
 fun Int.clickOnMenuItem(textId: Int) {
     openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
-    onView(allOf(withText(textId), isDescendantOfA(withId(this)))).perform(click())
+    onView(allOf(withText(textId))).perform(click())
 }
+
+@VisibleForTesting
+fun Int.clickWithText(): ViewInteraction =
+    onView(withText(this)).perform(click())
 
 @VisibleForTesting
 fun Int.clickOnItemAt(position: Int): ViewInteraction =
