@@ -59,6 +59,7 @@ class TaskFragmentTests {
   fun testTaskListEmptyState() {
     launchFragmentInHiltContainer<TasksFragment>()
     TaskListRobot.apply {
+      UiInteractionUtils().waitFor(500)
       assertListEmptyStateIsDisplayed()
       assertAddTaskButtonIsDisplayed()
     }
