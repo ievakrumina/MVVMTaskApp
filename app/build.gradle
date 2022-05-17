@@ -15,7 +15,7 @@ android {
         applicationId "com.ik.mvvmtaskapp"
         minSdk rootProject.minSdkVersion
         targetSdk rootProject.targetSdkVersion
-        versionCode androidGitVersion.code()
+        versionCode 1//androidGitVersion.code()
         versionName androidGitVersion.name()
 
         testInstrumentationRunner "com.ik.mvvmtaskapp.hiltespresso.CustomTestRunner"
