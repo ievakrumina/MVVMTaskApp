@@ -36,6 +36,12 @@ android {
             exclude 'META-INF/licenses/ASM'
             exclude("META-INF/*.kotlin_module")
         }
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
     }
 
     buildTypes {
@@ -74,7 +80,7 @@ android {
 
 allOpen {
     // allows mocking for classes w/o directly opening them for release builds
-    annotation 'com.ik.mvvmtaskapp.OpenForTesting'
+    annotation 'com.ik.mvvmtaskapp.OpenClass'
 }
 
 dependencies {
