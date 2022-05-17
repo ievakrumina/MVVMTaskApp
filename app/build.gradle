@@ -44,6 +44,14 @@ android {
         }
     }
 
+    applicationVariants.all { variant ->
+        if (variant.name == 'debug') {
+            variant.outputs.each { output ->
+                output.versionCodeOverride = 1
+            }
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled true
