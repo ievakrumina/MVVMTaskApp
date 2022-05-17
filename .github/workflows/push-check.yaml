@@ -27,7 +27,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build the app
-        run: ./gradlew build
+        run: ./gradlew assembleDebug
 
   test:
     runs-on: macos-latest
