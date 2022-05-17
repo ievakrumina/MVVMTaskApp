@@ -59,11 +59,11 @@ jobs:
             script: ./gradlew connectedCheck
 
         - name: Upload Reports
-            uses: actions/upload-artifact@v2
-            with:
-              name: Test-Reports
-              path: app/build/reports
-            if: always()
+          uses: actions/upload-artifact@v2
+          with:
+            name: Test-Reports
+            path: app/build/reports
+          iif: always()
 
 
 
