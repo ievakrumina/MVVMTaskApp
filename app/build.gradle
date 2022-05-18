@@ -44,13 +44,6 @@ android {
         }
     }
 
-    applicationVariants.all { variant ->
-        if (variant.name == 'debug') {
-            variant.outputs.each { output ->
-                output.versionCodeOverride = 1
-            }
-        }
-    }
 
     buildTypes {
         release {
@@ -154,6 +147,8 @@ dependencies {
 
     //Test helpers
     androidTestImplementation "androidx.room:room-testing:$roomVersion"
+    androidTestImplementation "androidx.test:runner:$testInstrumentationRunnerVersion"
+    androidTestUtil "androidx.test:orchestrator:$testOrchestratorVersion"
 }
 
 kapt {
