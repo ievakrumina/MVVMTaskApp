@@ -71,6 +71,7 @@ class AddEditFragmentTest {
         }
     }
 
+    @Ignore
     @Test
     fun testCreateTaskNavigation() {
         val navController = mockk<NavController>(relaxed = true)
@@ -91,6 +92,7 @@ class AddEditFragmentTest {
         }
     }
 
+    @Ignore
     @Test
     fun testEditTaskNavigation() {
         val navController = mockk<NavController>(relaxed = true)

@@ -142,6 +142,7 @@ class TaskFragmentTests {
     }
   }
 
+  @Ignore
   @Test
   fun testDeleteCompletedTasks() {
     val navController = mockk<NavController>(relaxed = true)
@@ -156,6 +157,7 @@ class TaskFragmentTests {
     }
   }
 
+  @Ignore
   @Test
   fun testEditTaskNavigation() = runTest {
     lateinit var title: String
@@ -174,6 +176,7 @@ class TaskFragmentTests {
     }
   }
 
+  @Ignore
   @Test
   fun testCreateTaskNavigation() {
     lateinit var title: String
