@@ -6,7 +6,6 @@ plugins {
     id 'androidx.navigation.safeargs.kotlin'
     id 'kotlin-allopen'
     id 'kotlin-parcelize'
-    id 'com.gladed.androidgitversion' version '0.4.14'
 }
 android {
     compileSdk rootProject.compileSdkVersion
@@ -15,8 +14,8 @@ android {
         applicationId "com.ik.mvvmtaskapp"
         minSdk rootProject.minSdkVersion
         targetSdk rootProject.targetSdkVersion
-        versionCode 1//androidGitVersion.code()
-        versionName androidGitVersion.name()
+        versionCode 1
+        versionName "1.0.0"
 
         testInstrumentationRunner "com.ik.mvvmtaskapp.hiltespresso.CustomTestRunner"
         testInstrumentationRunnerArguments clearPackageData: 'true'
@@ -153,9 +152,4 @@ dependencies {
 
 kapt {
     correctErrorTypes true
-}
-
-task printVersion {
-    println androidGitVersion.code()
-    println androidGitVersion.name()
 }
