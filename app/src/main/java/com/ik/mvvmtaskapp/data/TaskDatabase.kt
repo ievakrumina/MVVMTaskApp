@@ -2,10 +2,8 @@ package com.ik.mvvmtaskapp.data
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import androidx.sqlite.db.SupportSQLiteDatabase
 import com.ik.mvvmtaskapp.di.ApplicationScope
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Provider
 
