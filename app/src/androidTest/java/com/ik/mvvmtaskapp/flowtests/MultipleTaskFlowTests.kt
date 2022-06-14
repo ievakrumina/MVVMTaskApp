@@ -27,6 +27,23 @@ class MultipleTaskFlowTests: BaseFlowTest() {
     }
   }
 
+  @Test
+  fun testHideTasksFlow() {
+    createTask("Task A")
+    createTask("Task B")
+
+    TaskListRobot.apply {
+      assertTaskCount(2)
+      clickOnCheckBoxForTaskAtPosition(0)
+      clickOnHideCompleted()
+      assertTaskCount(1)
+      createTask("Task C")
+      assertTaskCount(2)
+      clickOnHideCompleted()
+      assertTaskCount(3)
+    }
+  }
+
   private fun createTask(name: String) {
     TaskListRobot.apply {
       clickOnAddTaskButton()

@@ -65,30 +65,36 @@ class TasksViewModel @Inject constructor(
     getTasks()
   }
 
-  fun getTasks() {
-    _tasks.postValue(TaskListState.Loading)
-    //Launch IO thread
-    viewModelScope.launch {
-      //Observe list of tasks from repository
-      taskRepository.getTasks(searchQuery, sortOrder, hideCompleted)
-        .collect { taskList ->
-          handleTaskList(taskList)
-        }
-    }
-  }
-
   fun onTaskCheckChanged(task: Task, isChecked: Boolean) =
     viewModelScope.launch {
       taskRepository.updateTask(task.copy(checked = isChecked))
+      getTasks()
     }
 
   fun onTaskSwiped(task: Task) = viewModelScope.launch {
     _singleTask.postValue(SingleTaskState.DeleteTask(task))
     taskRepository.deleteTask(task)
+    getTasks()
   }
 
   fun onUndoDeleteClicked(task: Task) = viewModelScope.launch {
     taskRepository.insertTask(task)
+    getTasks()
+  }
+
+  fun deleteCompletedTasks() = viewModelScope.launch {
+    taskRepository.deleteCompletedTasks()
+    getTasks()
+  }
+
+  fun getTasks() {
+    _tasks.postValue(TaskListState.Loading)
+    // Launch IO thread
+    viewModelScope.launch {
+      // Retrieve list of tasks from repository
+      val taskList = taskRepository.getTasks(searchQuery, sortOrder, hideCompleted)
+      handleTaskList(taskList)
+    }
   }
 
   private fun handleTaskList(taskList: Resource<List<Task>>) {
