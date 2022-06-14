@@ -10,10 +10,13 @@ class TaskRepository @Inject constructor(
   private val taskDao: TaskDao
 ) {
 
-  fun getTasks(query: String,order: SortOrder,hideComplete: Boolean): Flow<Resource<List<Task>>> {
-    return taskDao.getTasks(query, order, hideComplete)
-      .map { it.asSuccess() as Resource<List<Task>>}
-      .catch{emit(Resource.Error(it))}
+  /**
+   * No error catching. Room returns EmptyResultSetException (RuntimeException)
+   * Docs: https://developer.android.com/reference/androidx/room/package-summary#exceptions
+   */
+  suspend fun getTasks(query: String,order: SortOrder,hideComplete: Boolean): Resource<List<Task>> {
+    val result =  taskDao.getTasks(query, order, hideComplete)
+    return result.asSuccess()
   }
 
   suspend fun updateTask(task: Task) = taskDao.update(task)

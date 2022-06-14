@@ -1,6 +1,8 @@
 package com.ik.mvvmtaskapp.ui.tasks
 
+import android.app.Dialog
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -10,7 +12,6 @@ import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,10 +22,9 @@ import com.ik.mvvmtaskapp.R
 import com.ik.mvvmtaskapp.data.Task
 import com.ik.mvvmtaskapp.databinding.FragTasksBinding
 import com.ik.mvvmtaskapp.ui.addedittasks.TaskAction
+import com.ik.mvvmtaskapp.ui.deletecompletedtasks.DeleteCompletedTasksFragment
 import com.ik.mvvmtaskapp.util.onQueryTextChanged
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.filterNotNull
 
 @AndroidEntryPoint
 class TasksFragment : Fragment(R.layout.frag_tasks), TaskAdapter.OnItemClickListener {
@@ -35,6 +35,15 @@ class TasksFragment : Fragment(R.layout.frag_tasks), TaskAdapter.OnItemClickList
    */
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    viewModel.getTasks()
+  }
+
+  /**
+   * Retrieve latest list of tasks after returning to TaskFragment
+   */
+  override fun onResume() {
+    super.onResume()
+    Log.d("TaskFrag", "On resume")
     viewModel.getTasks()
   }
 
@@ -82,6 +91,14 @@ class TasksFragment : Fragment(R.layout.frag_tasks), TaskAdapter.OnItemClickList
             .make(requireView(), R.string.task_updated, Snackbar.LENGTH_SHORT)
             .show()
       }
+    }
+
+    setFragmentResultListener("delete_tasks_request") {_, bundle ->
+      when(bundle.get("delete_tasks_result")) {
+        true -> viewModel.deleteCompletedTasks()
+        else -> {}
+      }
+
     }
 
     viewModel.tasks.observe(viewLifecycleOwner) { taskState ->

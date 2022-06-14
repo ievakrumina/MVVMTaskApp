@@ -38,14 +38,14 @@ class TaskDaoTest {
   @Test
   fun insertTaskTest() = runTest {
     taskDao.insert(Task("First task"))
-    val result = taskDao.getTasks("", SortOrder.BY_NAME, false).first()
+    val result = taskDao.getTasks("", SortOrder.BY_NAME, false)
     assertEquals("First task", result[0].name)
   }
 
   @Test
   fun deleteTaskTest() = runTest {
     taskDao.delete(Task("First task"))
-    val result = taskDao.getTasks("", SortOrder.BY_NAME, false).first()
+    val result = taskDao.getTasks("", SortOrder.BY_NAME, false)
     assertTrue(result.isEmpty())
   }
 
@@ -53,7 +53,7 @@ class TaskDaoTest {
   fun updateTaskTest() = runTest {
     taskDao.insert(Task("First task"))
     taskDao.update(Task("Update task", false, 0,1))
-    val result = taskDao.getTasks("", SortOrder.BY_NAME, false).first()
+    val result = taskDao.getTasks("", SortOrder.BY_NAME, false)
     assertEquals("Update task", result[0].name)
   }
 
@@ -63,7 +63,7 @@ class TaskDaoTest {
     taskDao.insert(Task("Second task", true))
     taskDao.insert(Task("Third task", false))
     taskDao.deleteCompletedTasks()
-    val result = taskDao.getTasks("", SortOrder.BY_NAME, false).first()
+    val result = taskDao.getTasks("", SortOrder.BY_NAME, false)
     assertTrue(result.size == 1)
     assertEquals("Third task", result[0].name)
   }

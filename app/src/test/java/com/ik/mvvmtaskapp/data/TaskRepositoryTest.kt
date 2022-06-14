@@ -29,24 +29,12 @@ class TaskRepositoryTest {
 
   @Test
   fun `get tasks successfully`() = runBlockingTest {
-    val taskFlow = flowOf(listOf(Task("First task")))
-    coEvery { taskDao.getTasks(any(), any(), any()) } returns taskFlow
-    when(val result = repo.getTasks("", SortOrder.BY_NAME, false).first()) {
+    val taskList = listOf(Task("First task"))
+    coEvery { taskDao.getTasks(any(), any(), any()) } returns taskList
+    when(val result = repo.getTasks("", SortOrder.BY_NAME, false)) {
       is Resource.Success -> assertEquals("First task", result.data[0].name)
       is Resource.Error -> fail("Unexpected state")
-    }
-  }
-
-  @Test
-  fun `get tasks error state`() = runBlockingTest {
-    coEvery { taskDao.getTasks(any(), any(), any()) } returns flow { throw Exception("Error") }
-
-    when(val result = repo.getTasks("", SortOrder.BY_NAME, false).first()) {
-      is Resource.Success -> fail("Unexpected state")
       is Resource.Loading -> fail("Unexpected state")
-      is Resource.Error -> {
-        assertEquals(result.error?.message, "Error")
-      }
     }
   }
 

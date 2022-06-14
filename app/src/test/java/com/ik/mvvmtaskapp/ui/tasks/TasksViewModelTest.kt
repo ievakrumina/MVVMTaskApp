@@ -33,7 +33,7 @@ class TasksViewModelTest {
 
   @Test
   fun `get all tasks`() = runBlockingTest {
-    val response = flowOf(listOf(Task("First task")).asSuccess())
+    val response = listOf(Task("First task")).asSuccess()
     coEvery { repository.getTasks(any(), any(), any()) } returns response
     viewModel.searchQueryTasks("")
     viewModel.tasks.observeForever {
@@ -48,7 +48,7 @@ class TasksViewModelTest {
 
   @Test
   fun `hide completed tasks`() = runBlockingTest {
-    val response = flowOf(listOf(Task("First task")).asSuccess())
+    val response = listOf(Task("First task")).asSuccess()
     coEvery { repository.getTasks(any(), any(), true) } returns response
     viewModel.hideCompletedTasks(true)
     assertEquals(viewModel.getHideCompletedStatus(), true)
@@ -65,7 +65,7 @@ class TasksViewModelTest {
 
   @Test
   fun `sort tasks by date`() = runBlockingTest {
-    val response = flowOf(listOf(Task("First task")).asSuccess())
+    val response = listOf(Task("First task")).asSuccess()
     coEvery { repository.getTasks(any(), SortOrder.BY_DATE, any()) } returns response
     viewModel.sortTasksByDate()
     viewModel.tasks.observeForever {
@@ -80,7 +80,7 @@ class TasksViewModelTest {
 
   @Test
   fun `sort tasks by name`() = runBlockingTest {
-    val response = flowOf(listOf(Task("First task")).asSuccess())
+    val response = listOf(Task("First task")).asSuccess()
     coEvery { repository.getTasks(any(), SortOrder.BY_NAME, any()) } returns response
     viewModel.sortTasksByName()
     viewModel.tasks.observeForever {
@@ -95,7 +95,7 @@ class TasksViewModelTest {
 
   @Test
   fun `search for existing tasks`() = runBlockingTest {
-    val response = flowOf(listOf(Task("First task")).asSuccess())
+    val response = listOf(Task("First task")).asSuccess()
     coEvery { repository.getTasks("task", any(), any()) } returns response
     viewModel.searchQueryTasks("task")
     assertEquals(viewModel.getSearchQuery(), "task")
@@ -112,7 +112,7 @@ class TasksViewModelTest {
 
   @Test
   fun `empty list state`() = runBlockingTest {
-    val response = flowOf(emptyList<Task>().asSuccess())
+    val response = emptyList<Task>().asSuccess()
     coEvery { repository.getTasks(any(), any(), any()) } returns response
     viewModel.searchQueryTasks("Invalid query")
     viewModel.tasks.observeForever {
@@ -127,7 +127,7 @@ class TasksViewModelTest {
 
   @Test
   fun `list loading state`() = runBlockingTest {
-    val response = flowOf(listOf<Task>().asLoading())
+    val response = listOf<Task>().asLoading()
     coEvery { repository.getTasks(any(), any(), any()) } returns response
     viewModel.searchQueryTasks("")
     viewModel.tasks.observeForever {
@@ -142,7 +142,7 @@ class TasksViewModelTest {
 
   @Test
   fun `list error state`() = runBlockingTest {
-    val response = flowOf(listOf<Task>().asError())
+    val response = listOf<Task>().asError()
     coEvery { repository.getTasks(any(), any(), any()) } returns response
     viewModel.searchQueryTasks("")
     viewModel.tasks.observeForever {
