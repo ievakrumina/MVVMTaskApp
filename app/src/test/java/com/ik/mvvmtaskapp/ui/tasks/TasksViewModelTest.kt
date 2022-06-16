@@ -5,7 +5,6 @@ import com.ik.mvvmtaskapp.data.*
 import com.ik.mvvmtaskapp.rules.MainDispatcherRule
 import io.mockk.*
 import junit.framework.Assert.*
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.*
 import org.junit.After
