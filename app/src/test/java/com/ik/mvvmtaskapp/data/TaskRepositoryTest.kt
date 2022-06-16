@@ -1,34 +1,32 @@
 package com.ik.mvvmtaskapp.data
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.ik.mvvmtaskapp.rules.MainDispatcherRule
 import com.ik.mvvmtaskapp.ui.tasks.SortOrder
 import io.mockk.*
 import junit.framework.Assert.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.test.*
 import org.junit.*
-import java.lang.Exception
 
 class TaskRepositoryTest {
   @get:Rule
   val rule = InstantTaskExecutorRule()
 
+  @get:Rule
+  val dispatcherRule = MainDispatcherRule()
+
   private lateinit var repo: TaskRepository
-  private val testDispatcher = TestCoroutineDispatcher()
-  private val testScope = TestCoroutineScope()
 
   private val taskDao: TaskDao = mockk()
 
   @Before
   fun setUp() {
-    Dispatchers.setMain(testDispatcher)
     MockKAnnotations.init(this)
     repo = TaskRepository(taskDao)
   }
 
   @Test
-  fun `get tasks successfully`() = runBlockingTest {
+  fun `get tasks successfully`() = runTest {
     val taskList = listOf(Task("First task"))
     coEvery { taskDao.getTasks(any(), any(), any()) } returns taskList
     when(val result = repo.getTasks("", SortOrder.BY_NAME, false)) {
@@ -39,7 +37,7 @@ class TaskRepositoryTest {
   }
 
   @Test
-  fun `update task`() = runBlockingTest {
+  fun `update task`() = runTest {
     val task = Task("Test")
     coEvery { taskDao.update(any()) } just Runs
     repo.updateTask(task)
@@ -47,7 +45,7 @@ class TaskRepositoryTest {
   }
 
   @Test
-  fun `insert task`() = runBlockingTest {
+  fun `insert task`() = runTest {
     val task = Task("Task")
     coEvery { taskDao.insert(any()) } just Runs
     repo.insertTask(task)
@@ -55,14 +53,14 @@ class TaskRepositoryTest {
   }
 
   @Test
-  fun `delete completed tasks`() = runBlockingTest {
+  fun `delete completed tasks`() = runTest {
     coEvery { taskDao.deleteCompletedTasks() } just Runs
     repo.deleteCompletedTasks()
     coVerify(exactly = 1) { taskDao.deleteCompletedTasks()}
   }
 
   @Test
-  fun `delete single task`() = runBlockingTest {
+  fun `delete single task`() = runTest {
     val task = Task("New task")
     coEvery { taskDao.delete(any()) } just Runs
     repo.deleteTask(task)
@@ -72,9 +70,6 @@ class TaskRepositoryTest {
   @After
   fun tearDown() {
     unmockkAll()
-    Dispatchers.resetMain()
-    testDispatcher.cleanupTestCoroutines()
-    testScope.cleanupTestCoroutines()
   }
 
 }
