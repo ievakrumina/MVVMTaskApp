@@ -28,7 +28,6 @@ class TasksViewModelTest {
 
   @Before
   fun setUp() {
-    //Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
     viewModel = TasksViewModel(repository)
   }
 
