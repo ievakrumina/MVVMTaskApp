@@ -1,6 +1,8 @@
 package com.ik.mvvmtaskapp.utils
 
 import androidx.annotation.VisibleForTesting
+import androidx.test.espresso.Espresso
+import androidx.test.espresso.Espresso.closeSoftKeyboard
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -10,6 +12,6 @@ fun Int.typeText(text: String) {
     onView(withId(this)).perform(
         click(),
         replaceText(text),
-        closeSoftKeyboard()
     )
+    closeSoftKeyboard()
 }
