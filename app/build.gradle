@@ -148,7 +148,7 @@ dependencies {
     androidTestImplementation "androidx.room:room-testing:$roomVersion"
     androidTestImplementation "androidx.test:runner:$testInstrumentationRunnerVersion"
     androidTestUtil "androidx.test:orchestrator:$testOrchestratorVersion"
-    androidTestImplementation "androidx.annotation:annotation:$annotationVersion"
+    //androidTestImplementation "androidx.annotation:annotation:$annotationVersion"
 }
 
 kapt {
