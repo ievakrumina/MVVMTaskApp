@@ -17,7 +17,6 @@ class DeleteCompletedTasksFragment : DialogFragment() {
       val builder = AlertDialog.Builder(it)
       builder.setMessage(R.string.delete_completed_tasks_alert)
         .setPositiveButton(R.string.delete_confirmation) { _, _ ->
-          //viewModel.deleteCompletedTasks()
           setFragmentResult(
             "delete_tasks_request",
             bundleOf("delete_tasks_result" to true)

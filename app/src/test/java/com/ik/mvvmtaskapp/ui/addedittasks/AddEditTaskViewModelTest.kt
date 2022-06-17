@@ -1,15 +1,13 @@
 package com.ik.mvvmtaskapp.ui.addedittasks
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.SavedStateHandle
 import com.ik.mvvmtaskapp.data.Task
 import com.ik.mvvmtaskapp.data.TaskRepository
+import com.ik.mvvmtaskapp.rules.MainDispatcherRule
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import junit.framework.Assert.assertEquals
 import junit.framework.Assert.fail
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.*
 import org.junit.After
 import org.junit.Before
@@ -21,22 +19,24 @@ class AddEditTaskViewModelTest {
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
 
-    private lateinit var viewModel: AddEditTaskViewModel
+    @get:Rule
+    val dispatcherRule = MainDispatcherRule()
 
-    private val testDispatcher = TestCoroutineDispatcher()
+    private val scope = TestScope()
+
+    private lateinit var viewModel: AddEditTaskViewModel
 
     @MockK
     private lateinit var repository: TaskRepository
 
     @Before
     fun setUp() {
-        Dispatchers.setMain(testDispatcher)
         MockKAnnotations.init(this)
         viewModel = AddEditTaskViewModel(repository)
     }
 
     @Test
-    fun `error when save new task without name`() = runBlockingTest {
+    fun `error when save new task without name`() = runTest {
         viewModel.onSaveClick()
         viewModel.taskState.observeForever{ state ->
             when (state) {
@@ -64,7 +64,7 @@ class AddEditTaskViewModelTest {
     }
 
     @Test
-    fun `save new task`() = runBlockingTest {
+    fun `save new task`() = scope.runTest {
         coEvery { repository.insertTask(any()) } just Runs
         viewModel.updateTaskName("First task")
         viewModel.onSaveClick()
@@ -79,12 +79,13 @@ class AddEditTaskViewModelTest {
     }
 
     @Test
-    fun `save updated task`() = runBlockingTest {
+    fun `save updated task`() = runTest {
         val task = Task("First task")
-
         coEvery { repository.updateTask(any()) } just Runs
+
         viewModel.setCurrentTask(task)
         viewModel.onSaveClick()
+
         viewModel.taskState.observeForever{ state ->
             when (state) {
                 is AddEditTaskViewModel.AddEditTaskState.Invalid -> fail("Unexpected state")
@@ -99,6 +100,5 @@ class AddEditTaskViewModelTest {
     @After
     fun tearDown() {
         unmockkAll()
-        Dispatchers.resetMain()
     }
 }

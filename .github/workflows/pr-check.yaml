@@ -36,7 +36,7 @@ jobs:
     needs: build
     strategy:
       matrix:
-        api-level: [ 24, 28, 29 ,31 ]
+        api-level: [ 24, 28, 30 ]
         target: [ default ]
 
     steps:
